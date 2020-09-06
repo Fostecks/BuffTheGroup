@@ -10,13 +10,26 @@ function BuffTheGroup.buildMenu()
 		name = btg.name,
 		displayName = "BuffTheGroup",
 		author = "bitrock, Wheels, garlicmoon, Kingslayer513",
-		version = ""..btg.savedVars.version,
+		version = ""..btg.version,
 	}
 
 	local options = {
 		{
 			type = "header",
 			name = "Settings",
+		},
+		{
+			type = "checkbox",
+			name = "Enabled",
+			tooltip = "Toggles the UI",
+			getFunc = function() 
+				return btg.savedVars.enabled
+			 end,
+			setFunc = function(value)
+				btg.savedVars.enabled = value
+				btg.CheckActivation()
+			end,
+			
 		},
         {
 			type = "dropdown",
@@ -32,7 +45,7 @@ function BuffTheGroup.buildMenu()
 						break
 					end
 				end
-				btg.Reset()
+				btg.CheckActivation()
 			end,
             scrollable = true,
             reference = "buff_dropdown",
@@ -44,7 +57,7 @@ function BuffTheGroup.buildMenu()
 			getFunc = function() return btg.savedVars.gradientMode end,
 			setFunc = function(value)
 				btg.savedVars.gradientMode = value
-				btg.Reset()
+				btg.CheckActivation()
 			end,
 			
 		},

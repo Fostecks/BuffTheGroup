@@ -1,5 +1,6 @@
 BuffTheGroup = {
 	name = "BuffTheGroup",
+	version = "1.0.3",
 
 	-- Default settings
 	defaults = {
@@ -8,6 +9,7 @@ BuffTheGroup = {
 		maxRows = 6,
 		trackedBuff = 1,
 		gradientMode = true,
+		enabled = false,
 	},
 
 	roleIcons = {
@@ -17,7 +19,7 @@ BuffTheGroup = {
 		[LFG_ROLE_INVALID] = "/esoui/art/crafting/gamepad/crafting_alchemy_trait_unknown.dds",
 	},
 
-	enabled = false,
+	showUI = false,
 	groupSize = 0,
 	units = { },
 	panels = { },
@@ -45,17 +47,25 @@ function BuffTheGroup.OnAddOnLoaded( eventCode, addonName )
 
 	BuffTheGroup.savedVars = ZO_SavedVars:NewCharacterIdSettings("BuffTheGroupSavedVariables", 1, nil, BuffTheGroup.defaults, nil, GetWorldName())
 	BuffTheGroup.InitializeControls()
+	SLASH_COMMANDS["/btg"] = BuffTheGroup.ToggleState
+	SLASH_COMMANDS["/btgrefresh"] = BuffTheGroup.CheckActivation	
 
 	EVENT_MANAGER:RegisterForEvent(BuffTheGroup.name, EVENT_PLAYER_ACTIVATED, BuffTheGroup.CheckActivation)
 	EVENT_MANAGER:RegisterForEvent(BuffTheGroup.name, EVENT_RAID_TRIAL_STARTED, BuffTheGroup.CheckActivation)
 	BuffTheGroup.buildMenu()
 end
 
+function BuffTheGroup.ToggleState( ) 
+	BuffTheGroup.savedVars.enabled = not BuffTheGroup.savedVars.enabled
+	CHAT_SYSTEM:AddMessage("[BTG] " .. (BuffTheGroup.savedVars.enabled and "enabled" or "disabled"))
+	zo_callLater(BuffTheGroup.CheckActivation, 500)
+end
+
 function BuffTheGroup.CheckActivation( eventCode )
 	-- Check wiki.esoui.com/AvA_Zone_Detection if we want to enable this for PvP
 	local zoneId = GetZoneId(GetUnitZoneIndex("player"))
 
-	if (BuffTheGroupData.zones[zoneId] or BuffTheGroup.debug) then
+	if (BuffTheGroupData.zones[zoneId] and BuffTheGroup.savedVars.enabled or BuffTheGroup.debug) then
 	-- if(true) then
 		BuffTheGroup.Reset()
 
@@ -64,8 +74,8 @@ function BuffTheGroup.CheckActivation( eventCode )
 			zo_callLater(BuffTheGroup.Reset, 5000)
 		end
 
-		if (not BuffTheGroup.enabled) then
-			BuffTheGroup.enabled = true
+		if (not BuffTheGroup.showUI) then
+			BuffTheGroup.showUI = true
 
 			EVENT_MANAGER:RegisterForEvent(BuffTheGroup.name, EVENT_GROUP_MEMBER_JOINED, BuffTheGroup.GroupUpdate)
 			EVENT_MANAGER:RegisterForEvent(BuffTheGroup.name, EVENT_GROUP_MEMBER_LEFT, BuffTheGroup.GroupUpdate)
@@ -79,8 +89,8 @@ function BuffTheGroup.CheckActivation( eventCode )
 			SCENE_MANAGER:GetScene("hudui"):AddFragment(BuffTheGroup.fragment)
 		end
 	else
-		if (BuffTheGroup.enabled) then
-			BuffTheGroup.enabled = false
+		if (BuffTheGroup.showUI) then
+			BuffTheGroup.showUI = false
 
 			EVENT_MANAGER:UnregisterForEvent(BuffTheGroup.name, EVENT_GROUP_MEMBER_JOINED)
 			EVENT_MANAGER:UnregisterForEvent(BuffTheGroup.name, EVENT_GROUP_MEMBER_LEFT)
