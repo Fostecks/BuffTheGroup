@@ -71,6 +71,7 @@ BuffTheGroupData = {
 		[7] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(121878)), -- Minor Courage
 		[8] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(120017)), -- Minor Sorcery
 		[9] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(120028)), -- Minor Prophecy
+		[10] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(118366)), -- Empower
 
 	},
 
@@ -84,5 +85,6 @@ BuffTheGroupData = {
 		[7] = '/esoui/art/icons/ability_mage_045.dds',
 		[8] = '/esoui/art/icons/ability_buff_minor_sorcery.dds',
 		[9] = '/esoui/art/icons/ability_buff_minor_prophecy.dds',
+		[10] = '/esoui/art/icons/ability_buff_major_empower.dds',
 	},
 }

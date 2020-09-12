@@ -1,6 +1,6 @@
 BuffTheGroup = {
 	name = "BuffTheGroup",
-	version = "1.0.3",
+	version = "1.0.4",
 
 	-- Default settings
 	defaults = {
