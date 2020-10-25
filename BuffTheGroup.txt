@@ -14,6 +14,7 @@
 
 
 BuffTheGroupData.lua
+BuffTheGroupUtil.lua
 BuffTheGroup.lua
 BuffTheGroupMenu.lua
 BuffTheGroup.xml

@@ -1,10 +1,7 @@
-BuffTheGroup = BuffTheGroup or { }
-local btg  = BuffTheGroup
+btg = btg or { }
 local EM = GetEventManager()
 
-function BuffTheGroup.buildMenu()
-	local LAM = LibAddonMenu2
-
+function btg.buildMenu()
 	local panelData = {
 		type = "panel",
 		name = btg.name,
@@ -37,11 +34,11 @@ function BuffTheGroup.buildMenu()
 			type = "dropdown",
 			name = "Buff",
 			tooltip = "Buff to track",
-			choices = BuffTheGroupData.buffSelectionList,
-			default = BuffTheGroupData.buffSelectionList[btg.defaults.trackedBuff],
-			getFunc = function() return BuffTheGroupData.buffSelectionList[btg.savedVars.trackedBuff] end,
+			choices = btgData.buffs,
+			default = btgData.buffs[btg.defaults.trackedBuff],
+			getFunc = function() return btgData.buffs[btg.savedVars.trackedBuff] end,
 			setFunc = function(selected)
-				for index, name in ipairs(BuffTheGroupData.buffSelectionList) do
+				for index, name in ipairs(btgData.buffs) do
 					if name == selected then
 						btg.savedVars.trackedBuff = index
 						break
@@ -78,7 +75,8 @@ function BuffTheGroup.buildMenu()
 			end,
 		},
 	}
-	LAM:RegisterAddonPanel(btg.name.."Options", panelData)
-	LAM:RegisterOptionControls(btg.name.."Options", options)
+
+	LibAddonMenu2:RegisterAddonPanel(btg.name.."Options", panelData)
+	LibAddonMenu2:RegisterOptionControls(btg.name.."Options", options)
 end
 
