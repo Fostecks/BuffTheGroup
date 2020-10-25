@@ -1,6 +1,6 @@
 BuffTheGroup = {
 	name = "BuffTheGroup",
-	version = "1.0.4",
+	version = "1.1.0",
 
 	-- Default settings
 	defaults = {
@@ -9,7 +9,8 @@ BuffTheGroup = {
 		maxRows = 6,
 		trackedBuff = 1,
 		gradientMode = true,
-		enabled = false,
+		enabled = true,
+		debug = false
 	},
 
 	roleIcons = {
@@ -23,8 +24,6 @@ BuffTheGroup = {
 	groupSize = 0,
 	units = { },
 	panels = { },
-
-	debug = false,
 }
 
 ------GLOBALS-------
@@ -65,7 +64,7 @@ function BuffTheGroup.CheckActivation( eventCode )
 	-- Check wiki.esoui.com/AvA_Zone_Detection if we want to enable this for PvP
 	local zoneId = GetZoneId(GetUnitZoneIndex("player"))
 
-	if (BuffTheGroupData.zones[zoneId] and BuffTheGroup.savedVars.enabled or BuffTheGroup.debug) then
+	if (BuffTheGroupData.zones[zoneId] and BuffTheGroup.savedVars.enabled or BuffTheGroup.savedVars.debug) then
 	-- if(true) then
 		BuffTheGroup.Reset()
 
@@ -187,7 +186,7 @@ end
 
 function BuffTheGroup.Reset( )
 
-	if (BuffTheGroup.debug) then
+	if (BuffTheGroup.savedVars.debug) then
 		CHAT_SYSTEM:AddMessage("[BTG] Resetting")
 	end
 
@@ -294,16 +293,6 @@ function BuffTheGroup.UpdateRange( panelId, status )
 	else
 		BuffTheGroup.panels[panelId].panel:SetAlpha(0.5)
 	end
-end
-
-function BuffTheGroup.EnableDebug( )
-	BuffTheGroup.debug = true
-
-	if (not BuffTheGroup.savedVars.debug) then
-		BuffTheGroup.savedVars.debug = { }
-	end
-
-	BuffTheGroup.CheckActivation()
 end
 
 EVENT_MANAGER:RegisterForEvent(BuffTheGroup.name, EVENT_ADD_ON_LOADED, BuffTheGroup.OnAddOnLoaded)
