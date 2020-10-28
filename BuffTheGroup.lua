@@ -24,7 +24,6 @@ function btg.CheckActivation( eventCode )
 	local zoneId = GetZoneId(GetUnitZoneIndex("player"))
 
 	if (btgData.zones[zoneId] and btg.savedVars.enabled or btg.savedVars.debug) then
-	-- if(true) then
 		btg.Reset()
 
 		-- Workaround for when the game reports that the player is not in a group shortly after zoning
@@ -41,10 +40,17 @@ function btg.CheckActivation( eventCode )
 			EVENT_MANAGER:RegisterForEvent(btg.name, EVENT_GROUP_SUPPORT_RANGE_UPDATE, btg.GroupSupportRangeUpdate)
 			EVENT_MANAGER:RegisterForEvent(btg.name, EVENT_EFFECT_CHANGED, btg.EffectChanged)
 			EVENT_MANAGER:RegisterForUpdate(btg.name.."Cycle", 100, btg.refreshUI)
-			EVENT_MANAGER:AddFilterForEvent(btg.name, EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG_PREFIX, "group")
+			--EVENT_MANAGER:AddFilterForEvent(btg.name, EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG_PREFIX, "group")
 
-			SCENE_MANAGER:GetScene("hud"):AddFragment(btg.fragment)
-			SCENE_MANAGER:GetScene("hudui"):AddFragment(btg.fragment)
+			for index, fragment in pairs(btg.fragments) do
+				if(btg.savedVars.trackedBuffs[index]) then
+					SCENE_MANAGER:GetScene("hud"):AddFragment(fragment)
+					SCENE_MANAGER:GetScene("hudui"):AddFragment(fragment)
+				else
+					SCENE_MANAGER:GetScene("hud"):RemoveFragment(fragment)
+					SCENE_MANAGER:GetScene("hudui"):RemoveFragment(fragment)
+				end
+			end
 		end
 	else
 		if (btg.showUI) then
@@ -60,8 +66,10 @@ function btg.CheckActivation( eventCode )
 			EVENT_MANAGER:UnregisterForEvent(btg.name, EVENT_UNIT_ATTRIBUTE_VISUAL_REMOVED)
 			EVENT_MANAGER:UnregisterForEvent(btg.name, EVENT_UNIT_ATTRIBUTE_VISUAL_UPDATED)
 
-			SCENE_MANAGER:GetScene("hud"):RemoveFragment(btg.fragment)
-			SCENE_MANAGER:GetScene("hudui"):RemoveFragment(btg.fragment)
+			for _, fragment in pairs(btg.fragments) do
+				SCENE_MANAGER:GetScene("hud"):RemoveFragment(fragment)
+				SCENE_MANAGER:GetScene("hudui"):RemoveFragment(fragment)
+			end
 		end
 	end
 end
@@ -72,185 +80,186 @@ end
 
 function btg.GroupMemberRoleChanged( eventCode, unitTag, newRole )
 	if (btg.units[unitTag]) then
-		btg.panels[btg.units[unitTag].panelId].role:SetTexture(btgData.roleIcons[newRole])
+		for i = 1, #btgData.buffs do
+			btg.frames[i].panels[btg.units[unitTag].panelId].role:SetTexture(btgData.roleIcons[newRole])
+		end
 	end
 end
 
 function btg.GroupSupportRangeUpdate( eventCode, unitTag, status )
 	if (btg.units[unitTag]) then
-		btg.UpdateRange(btg.units[unitTag].panelId, status)
+		for i = 1, #btgData.buffs do
+			btg.UpdateRange(i, btg.units[unitTag].panelId, status)
+		end
 	end
 end
 
 function btg.refreshUI()
-	for unitTag, unit in pairs(btg.units) do
-		if(btg.savedVars.gradientMode) then
-			btg.UpdateStatus(unitTag)
-		else
-			btg.UpdateStatusDiscrete(unitTag)
+	for unitTag, _ in pairs(btg.units) do
+		for i = 1, #btgData.buffs do
+			btg.UpdateStatus(i, unitTag)
 		end
 	end
 end
 
 function btg.EffectChanged( eventCode, changeType, effectSlot, effectName, unitTag, beginTime, endTime, stackCount, iconName, buffType, effectType, abilityType, statusEffectType, unitName, unitId, abilityId, sourceType )
-	local trackedBuff = btgData.buffs[btg.savedVars.trackedBuff]
 	-- format effectName so it's common across all languages
 	local formattedEffectName = zo_strformat(SI_ABILITY_NAME, effectName)
 
-	if (trackedBuff == formattedEffectName and btg.units[unitTag]) then
-		if (changeType == EFFECT_RESULT_FADED) then
-			if (btg.units[unitTag].buff) then
-				btg.units[unitTag].buff = 0
+	for index, buff in pairs(btgData.buffs) do
+		if (btg.savedVars.trackedBuffs[index]) then
+			if (buff == formattedEffectName and btg.units[unitTag]) then
+				if (changeType == EFFECT_RESULT_FADED) then
+					btg.units[unitTag].buffs[index].hasBuff = false
+				else
+					btg.units[unitTag].buffs[index].hasBuff = true
+					btg.units[unitTag].buffs[index].endTime = endTime
+					btg.units[unitTag].buffs[index].buffDuration = endTime - beginTime
+				end
 			end
-		else
-			if (btg.units[unitTag].buff == 0) then
-				btg.units[unitTag].buff = 1
-			end
-			btg.units[unitTag].endTime = endTime
-			btg.units[unitTag].buffDuration = endTime - beginTime
 		end
 	end
 end
 
-function btg.OnMoveStop( )
-	btg.savedVars.left = btgFrame:GetLeft()
-	btg.savedVars.top = btgFrame:GetTop()
+function btg.OnMoveStop(i, frame)
+	btg.savedVars.framePositions[i].left = frame:GetLeft()
+	btg.savedVars.framePositions[i].top = frame:GetTop()
 end
 
 function btg.InitializeControls( )
 	local wm = GetWindowManager()
 
-	for i = 1, GROUP_SIZE_MAX do
-		local panel = wm:CreateControlFromVirtual("btgPanel" .. i, btgFrame, "btgPanel")
-	
-		btg.panels[i] = {
-			panel = panel,
-			bg = panel:GetNamedChild("Backdrop"),
-			name = panel:GetNamedChild("Name"),
-			role = panel:GetNamedChild("Role"),
-			icon = panel:GetNamedChild("Icon"),
-			stat = panel:GetNamedChild("Stat"),
+	for i = 1, #btgData.buffs do
+		local frame = wm:CreateControlFromVirtual("btgFrame" .. i, btgUI, "btgFrame")
+
+		frame:SetHandler("OnMoveStop", function() btg.OnMoveStop(i, frame) end)
+
+		btg.frames[i] = {
+			frame = frame,
+			panels = {},
 		}
 
-		btg.panels[i].bg:SetEdgeColor(0, 0, 0, 0)
-		btg.panels[i].bg:SetCenterColor(0, 0, 0, 0.5)
-		btg.panels[i].stat:SetColor(1, 0, 1, 1)
+		for j = 1, GROUP_SIZE_MAX do
+			local panel = wm:CreateControlFromVirtual("btgPanel" .. i .. j, frame, "btgPanel")
 
+			btg.frames[i].panels[j] = {
+				panel = panel,
+				bg = panel:GetNamedChild("Backdrop"),
+				name = panel:GetNamedChild("Name"),
+				role = panel:GetNamedChild("Role"),
+				icon = panel:GetNamedChild("Icon"),
+				stat = panel:GetNamedChild("Stat"),
+			}
+
+			btg.frames[i].panels[j].bg:SetEdgeColor(0, 0, 0, 0)
+			btg.frames[i].panels[j].bg:SetCenterColor(0, 0, 0, 0.5)
+			btg.frames[i].panels[j].stat:SetColor(1, 1, 1, 1)
+			btg.frames[i].panels[j].stat:SetText("0")
+		end
+
+		frame:ClearAnchors()
+		frame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, btg.savedVars.framePositions[i].left, btg.savedVars.framePositions[i].top)
+
+		btg.fragments[i] = ZO_HUDFadeSceneFragment:New(frame)
 	end
-
-	btgFrame:ClearAnchors()
-	btgFrame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, btg.savedVars.left, btg.savedVars.top)
-
-	btg.fragment = ZO_HUDFadeSceneFragment:New(btgFrame)
 end
 
 function btg.Reset( )
-
 	if (btg.savedVars.debug) then
 		CHAT_SYSTEM:AddMessage("[BTG] Resetting")
 	end
 
 	btg.groupSize = GetGroupSize()
-	btg.units = { }
+	btg.units = {}
 
-	local trackedBuffIcon = btgData.buffIcons[btg.savedVars.trackedBuff]
-	btgFrameIcon:SetTexture(trackedBuffIcon)
+	for i = 1, #btgData.buffs do
+		_G["btgFrame"..i.."Icon"]:SetTexture(btgData.buffIcons[i])
+	end
 
-	for i = 1, GROUP_SIZE_MAX do
-		local soloPanel = i == 1 and btg.groupSize == 0
-
-		if (i <= btg.groupSize or soloPanel) then
-			local unitTag = (soloPanel) and "player" or GetGroupUnitTagByIndex(i)
-
+	for j = 1, GROUP_SIZE_MAX do
+		if (j <= btg.groupSize or j == 1 and btg.groupSize == 0) then
+			local unitTag = (j == 1 and btg.groupSize == 0) and "player" or GetGroupUnitTagByIndex(j)
 			btg.units[unitTag] = {
-				panelId = i,
-				buff = 0,
-				endTime,
+				panelId = j,
 				self = AreUnitsEqual("player", unitTag),
+				buffs = {},
 			}
-
-			btg.panels[i].name:SetText(GetUnitDisplayName(unitTag))
-			btg.panels[i].role:SetTexture(btgData.roleIcons[GetGroupMemberSelectedRole(unitTag)])
-
-			btg.UpdateStatus(unitTag)
-			btg.UpdateRange(i, IsUnitInGroupSupportRange(unitTag))
-
-			if (i == 1) then
-				btg.panels[i].panel:SetAnchor(TOPLEFT, btgFrame, TOPLEFT, 0, 0)
-			elseif (i <= btg.savedVars.maxRows) then
-				btg.panels[i].panel:SetAnchor(TOPLEFT, btg.panels[i - 1].panel, BOTTOMLEFT, 0, 0)
-			else
-				btg.panels[i].panel:SetAnchor(TOPLEFT, btg.panels[i - btg.savedVars.maxRows].panel, TOPRIGHT, 0, 0)
+			for i = 1, #btgData.buffs do
+				btg.units[unitTag].buffs[i] = {
+					hasBuff = false,
+					endTime = 0,
+					buffDuration = 0,
+				}
 			end
+		end
+	end
 
-			btg.panels[i].panel:SetHidden(false)
-		else
-			btg.panels[i].panel:SetAnchor(TOPLEFT, btgFrame, TOPLEFT, 0, 0)
-			btg.panels[i].panel:SetHidden(true)
+	for i = 1, #btgData.buffs do
+		for j = 1, GROUP_SIZE_MAX do
+			local soloPanel = j == 1 and btg.groupSize == 0
+
+			if (j <= btg.groupSize or soloPanel) then
+				local unitTag = (soloPanel) and "player" or GetGroupUnitTagByIndex(j)
+
+				btg.frames[i].panels[j].name:SetText(GetUnitDisplayName(unitTag))
+				btg.frames[i].panels[j].role:SetTexture(btgData.roleIcons[GetGroupMemberSelectedRole(unitTag)])
+
+				btg.UpdateStatus(i, unitTag)
+				btg.UpdateRange(i, j, IsUnitInGroupSupportRange(unitTag))
+
+				if (j == 1) then
+					btg.frames[i].panels[j].panel:SetAnchor(TOPLEFT, btgFrame, TOPLEFT, 0, 0)
+				elseif (j <= btg.savedVars.maxRows) then
+					btg.frames[i].panels[j].panel:SetAnchor(TOPLEFT, btg.frames[i].panels[j - 1].panel, BOTTOMLEFT, 0, 0)
+				else
+					btg.frames[i].panels[j].panel:SetAnchor(TOPLEFT, btg.frames[i].panels[j - btg.savedVars.maxRows].panel, TOPRIGHT, 0, 0)
+				end
+
+				btg.frames[i].panels[j].panel:SetHidden(false)
+			else
+				btg.frames[i].panels[j].panel:SetAnchor(TOPLEFT, btgFrame, TOPLEFT, 0, 0)
+				btg.frames[i].panels[j].panel:SetHidden(true)
+			end
 		end
 	end
 end
 
-function btg.UpdateStatus( unitTag )
+function btg.UpdateStatus( buffIndex, unitTag )
 	local unit = btg.units[unitTag]
-	local bg = btg.panels[unit.panelId].bg
-	local stat = btg.panels[unit.panelId].stat
+	local buffData = unit.buffs[buffIndex]
+	local panel = btg.frames[buffIndex].panels[unit.panelId]
 	local now = GetFrameTimeMilliseconds() / 1000
 
-	if(unit.endTime) then
-		local buffRemaining = unit.endTime - now
+	if(buffData.endTime) then
+		local buffRemaining = buffData.endTime - now
 
-		local progress = btg.Clamp(1 - buffRemaining / unit.buffDuration, 0, 1)
-		local r, g, b = btg.Interpolate(btg.startR, btg.endR, progress) / 255,
-		                btg.Interpolate(btg.startG, btg.endG, progress) / 255,
-		                btg.Interpolate(btg.startB, btg.endB, progress) / 255
+		local progress = btgUtil.Clamp(1 - buffRemaining / buffData.buffDuration, 0, 1)
+		local r, g, b = btgUtil.Interpolate(btg.startR, btg.endR, progress) / 255,
+		                btgUtil.Interpolate(btg.startG, btg.endG, progress) / 255,
+		                btgUtil.Interpolate(btg.startB, btg.endB, progress) / 255
 
 		if (buffRemaining > 0) then
-			stat:SetText(string.format("%.1f", buffRemaining))
+			panel.stat:SetText(string.format("%.1f", buffRemaining))
 			if (unit.self) then
-				bg:SetCenterColor(r, g, b, 1-0.5*progress)
+				panel.bg:SetCenterColor(r, g, b, 1-0.5*progress)
 			else
-				bg:SetCenterColor(r, g, b, 0.8-0.4*progress)
+				panel.bg:SetCenterColor(r, g, b, 0.8-0.4*progress)
 			end
 		else
-			bg:SetCenterColor(0, 0, 0, 0.5)
-			stat:SetText("0")
-			if(unit.buff < 1) then
-				unit.endTime = nil
+			panel.bg:SetCenterColor(0, 0, 0, 0.5)
+			panel.stat:SetText("0")
+			if(not buffData.hasBuff) then
+				buffData.endTime = nil
 			end
 		end
 	end
 end
 
-function btg.UpdateStatusDiscrete( unitTag )
-	local unit = btg.units[unitTag]
-	local bg = btg.panels[unit.panelId].bg
-	local stat = btg.panels[unit.panelId].stat
-	local now = GetFrameTimeMilliseconds() / 1000
-	if (unit.buff < 1) then
-		bg:SetCenterColor(0, 0, 0, 0.5)
-	elseif (unit.self) then
-		bg:SetCenterColor(0.46, 0.87, 0.47, 1)
-	else
-		bg:SetCenterColor(0.46, 0.87, 0.47, 0.8)
-	end
-	if(unit.endTime) then
-		local buffRemaining = unit.endTime - now
-		if (buffRemaining > 0) then
-			stat:SetText(tostring(buffRemaining))
-		else
-			unit.endTime = nil
-		end
-	else
-		stat:SetText("0")
-	end
-end
-
-function btg.UpdateRange( panelId, status )
+function btg.UpdateRange( buffIndex, panelId, status )
 	if (status) then
-		btg.panels[panelId].panel:SetAlpha(1)
+		btg.frames[buffIndex].panels[panelId].panel:SetAlpha(1)
 	else
-		btg.panels[panelId].panel:SetAlpha(0.5)
+		btg.frames[buffIndex].panels[panelId].panel:SetAlpha(0.5)
 	end
 end
 

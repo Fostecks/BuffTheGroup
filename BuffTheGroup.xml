@@ -1,5 +1,5 @@
 <GuiXml>
-	<Controls>
+	<Controls name="btgUI">
 		<Control name="btgPanel" resizeToFitDescendents="true" hidden="true" virtual="true">
 			<Controls>
 				<Backdrop name="$(parent)Backdrop">
@@ -22,16 +22,13 @@
 			</Controls>
 		</Control>
 
-		<TopLevelControl name="btgFrame" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+		<TopLevelControl name="btgFrame" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true" virtual="true">
 			<Controls>
 				<Texture name="$(parent)Icon">
 					<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="TOP" />
 					<Dimensions x="36" y="36"/>
 				</Texture>
 			</Controls>
-			<OnMoveStop>
-				BuffTheGroup.OnMoveStop()
-			</OnMoveStop>
 		</TopLevelControl>
 	</Controls>
 </GuiXml>

@@ -72,20 +72,19 @@ btgData = {
 		[8]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(120017)), -- Minor Sorcery
 		[9]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(120028)), -- Minor Prophecy
 		[10] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(118366)), -- Empower
-
 	},
 
 	buffIcons = {
-		[1] = "/esoui/art/icons/ability_healer_019.dds",
-		[2] = "/esoui/art/icons/procs_006.dds",
-		[3] = "/esoui/art/icons/ability_mage_045.dds",
-		[4] = "/esoui/art/icons/ability_buff_major_force.dds",
-		[5] = "/esoui/art/icons/ability_buff_major_berserk.dds",
-		[6] = '/esoui/art/icons/ability_buff_minor_berserk.dds',
-		[7] = '/esoui/art/icons/ability_mage_045.dds',
-		[8] = '/esoui/art/icons/ability_buff_minor_sorcery.dds',
-		[9] = '/esoui/art/icons/ability_buff_minor_prophecy.dds',
-		[10] = '/esoui/art/icons/ability_buff_major_empower.dds',
+		[1]  = "/esoui/art/icons/ability_healer_019.dds",          -- Powerful Assault
+		[2]  = "/esoui/art/icons/procs_006.dds",                   -- Major Slayer
+		[3]  = "/esoui/art/icons/ability_mage_045.dds",            -- Major Courage
+		[4]  = "/esoui/art/icons/ability_buff_major_force.dds",    -- Major Force
+		[5]  = "/esoui/art/icons/ability_buff_major_berserk.dds",  -- Major Berserk
+		[6]  = '/esoui/art/icons/ability_buff_minor_berserk.dds',  -- Minor Berserk
+		[7]  = '/esoui/art/icons/ability_mage_045.dds',            -- Minor Courage
+		[8]  = '/esoui/art/icons/ability_buff_minor_sorcery.dds',  -- Minor Sorcery
+		[9]  = '/esoui/art/icons/ability_buff_minor_prophecy.dds', -- Minor Prophecy
+		[10] = '/esoui/art/icons/ability_buff_major_empower.dds',  -- Empower
 	},
 
 	roleIcons = {
@@ -98,23 +97,31 @@ btgData = {
 
 btg = {
 	name = "BuffTheGroup",
-	version = "1.1.0",
+	version = "2.0.0",
 
 	defaults = {
-		left = 1000,
-		top = 500,
+		framePositions = {},
 		maxRows = 6,
 		trackedBuff = 1,
-		gradientMode = true,
 		enabled = true,
-		debug = false
+		debug = false,
+		trackedBuffs = btgUtil.FillTable(#btgData.buffs, false),
 	},
 
 	showUI = false,
 	groupSize = 0,
-	units = { },
-	panels = { },
+	units = {},
+	panels = {},
+	frames = {},
+	fragments = {},
 
 	startR = 117, startG = 222, startB = 120,
 	endR = 222, endG = 117, endB = 117,
 }
+
+for i = 1, #btgData.buffs do
+	btg.defaults.framePositions[i] = {
+		left = 1000,
+		top = 100 + (i-1)*85,
+	}
+end
