@@ -102,9 +102,8 @@ btg = {
 	defaults = {
 		framePositions = {},
 		maxRows = 6,
-		trackedBuff = 1,
 		enabled = true,
-		debug = false,
+		alwaysOn = false,
 		trackedBuffs = btgUtil.FillTable(#btgData.buffs, false),
 	},
 
@@ -121,7 +120,7 @@ btg = {
 
 for i = 1, #btgData.buffs do
 	btg.defaults.framePositions[i] = {
-		left = 1000,
-		top = 100 + (i-1)*85,
+		left = 1300,
+		top = 150 + (i-1)*85,
 	}
 end

@@ -32,14 +32,14 @@ function btg.buildMenu()
 		},
 		{
 			type = "checkbox",
-			name = "Debug Mode",
-			tooltip = "Buff trackers are always visible and debug messages are printed to chat",
-			default = btg.defaults.debug,
+			name = "Always On",
+			tooltip = "Buff trackers will be permanently visible",
+			default = btg.defaults.alwaysOn,
 			getFunc = function()
-				return btg.savedVars.debug
+				return btg.savedVars.alwaysOn
 			end,
 			setFunc = function(value)
-				btg.savedVars.debug = value
+				btg.savedVars.alwaysOn = value
 				btg.CheckActivation()
 			end,
 		},
@@ -47,10 +47,42 @@ function btg.buildMenu()
 			type = "header",
 			name = "Buffs",
 		},
+		-- buffs inserted here
+		{
+			type = "button",
+			name = "Deselect All",
+			width = "half",
+			func = function()
+				for i = 1, #btgData.buffs do
+					local control = _G["btgControlBuff"..i]
+
+					btg.savedVars.trackedBuffs[i] = false
+					control.value = false
+					control.label:SetColor(ZO_DEFAULT_DISABLED_COLOR:UnpackRGBA())
+					control.checkbox:SetText(control.uncheckedText)
+				end
+				btg.CheckActivation()
+			end,
+		},
+		{
+			type = "button",
+			name = "Reset Positions",
+			width = "half",
+			func = function()
+				for i = 1, #btgData.buffs do
+					btg.savedVars.framePositions[i] = {
+						left = 1300,
+						top = 150 + (i-1)*85,
+					}
+					btg.frames[i].frame:ClearAnchors()
+					btg.frames[i].frame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, btg.savedVars.framePositions[i].left, btg.savedVars.framePositions[i].top)
+				end
+			end,
+		}
 	}
 
 	for index, buff in ipairs(btgData.buffs) do
-		table.insert(options, {
+		table.insert(options, #options-1, {
 			type = "checkbox",
 			name = buff,
 			default = index == 1,
@@ -64,39 +96,6 @@ function btg.buildMenu()
 			reference = "btgControlBuff"..index
 		})
 	end
-
-	table.insert(options, {
-		type = "button",
-		name = "Deselect All",
-		width = "half",
-		func = function()
-			for i = 1, #btgData.buffs do
-				local control = _G["btgControlBuff"..i]
-
-				btg.savedVars.trackedBuffs[i] = false
-				control.value = false
-				control.label:SetColor(ZO_DEFAULT_DISABLED_COLOR:UnpackRGBA())
-				control.checkbox:SetText(control.uncheckedText)
-			end
-			btg.CheckActivation()
-		end,
-	})
-
-	table.insert(options, {
-		type = "button",
-		name = "Reset Positions",
-		width = "half",
-		func = function()
-			for i = 1, #btgData.buffs do
-				btg.savedVars.framePositions[i] = {
-					left = 1200,
-					top = 100 + (i-1)*85,
-				}
-				btg.frames[i].frame:ClearAnchors()
-				btg.frames[i].frame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, btg.savedVars.framePositions[i].left, btg.savedVars.framePositions[i].top)
-			end
-		end,
-	})
 
 	LibAddonMenu2:RegisterAddonPanel(btg.name.."Options", panelData)
 	LibAddonMenu2:RegisterOptionControls(btg.name.."Options", options)

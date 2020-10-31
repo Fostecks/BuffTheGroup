@@ -23,7 +23,7 @@ function btg.CheckActivation( eventCode )
 	-- Check wiki.esoui.com/AvA_Zone_Detection if we want to enable this for PvP
 	local zoneId = GetZoneId(GetUnitZoneIndex("player"))
 
-	if (btgData.zones[zoneId] and btg.savedVars.enabled or btg.savedVars.debug) then
+	if (btgData.zones[zoneId] and btg.savedVars.enabled or btg.savedVars.alwaysOn) then
 		btg.Reset()
 
 		-- Workaround for when the game reports that the player is not in a group shortly after zoning
@@ -40,16 +40,15 @@ function btg.CheckActivation( eventCode )
 			EVENT_MANAGER:RegisterForEvent(btg.name, EVENT_GROUP_SUPPORT_RANGE_UPDATE, btg.GroupSupportRangeUpdate)
 			EVENT_MANAGER:RegisterForEvent(btg.name, EVENT_EFFECT_CHANGED, btg.EffectChanged)
 			EVENT_MANAGER:RegisterForUpdate(btg.name.."Cycle", 100, btg.refreshUI)
-			--EVENT_MANAGER:AddFilterForEvent(btg.name, EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG_PREFIX, "group")
-
-			for index, fragment in pairs(btg.fragments) do
-				if(btg.savedVars.trackedBuffs[index]) then
-					SCENE_MANAGER:GetScene("hud"):AddFragment(fragment)
-					SCENE_MANAGER:GetScene("hudui"):AddFragment(fragment)
-				else
-					SCENE_MANAGER:GetScene("hud"):RemoveFragment(fragment)
-					SCENE_MANAGER:GetScene("hudui"):RemoveFragment(fragment)
-				end
+			EVENT_MANAGER:AddFilterForEvent(btg.name, EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG_PREFIX, "group")
+		end
+		for index, fragment in pairs(btg.fragments) do
+			if(btg.savedVars.trackedBuffs[index]) then
+				SCENE_MANAGER:GetScene("hud"):AddFragment(fragment)
+				SCENE_MANAGER:GetScene("hudui"):AddFragment(fragment)
+			else
+				SCENE_MANAGER:GetScene("hud"):RemoveFragment(fragment)
+				SCENE_MANAGER:GetScene("hudui"):RemoveFragment(fragment)
 			end
 		end
 	else
@@ -65,11 +64,10 @@ function btg.CheckActivation( eventCode )
 			EVENT_MANAGER:UnregisterForEvent(btg.name, EVENT_UNIT_ATTRIBUTE_VISUAL_ADDED)
 			EVENT_MANAGER:UnregisterForEvent(btg.name, EVENT_UNIT_ATTRIBUTE_VISUAL_REMOVED)
 			EVENT_MANAGER:UnregisterForEvent(btg.name, EVENT_UNIT_ATTRIBUTE_VISUAL_UPDATED)
-
-			for _, fragment in pairs(btg.fragments) do
-				SCENE_MANAGER:GetScene("hud"):RemoveFragment(fragment)
-				SCENE_MANAGER:GetScene("hudui"):RemoveFragment(fragment)
-			end
+		end
+		for _, fragment in pairs(btg.fragments) do
+			SCENE_MANAGER:GetScene("hud"):RemoveFragment(fragment)
+			SCENE_MANAGER:GetScene("hudui"):RemoveFragment(fragment)
 		end
 	end
 end
@@ -165,10 +163,6 @@ function btg.InitializeControls( )
 end
 
 function btg.Reset( )
-	if (btg.savedVars.debug) then
-		CHAT_SYSTEM:AddMessage("[BTG] Resetting")
-	end
-
 	btg.groupSize = GetGroupSize()
 	btg.units = {}
 
