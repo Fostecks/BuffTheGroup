@@ -1,5 +1,4 @@
 btg = btg or { }
-local EM = GetEventManager()
 
 function btg.buildMenu()
 	local panelData = {
@@ -9,6 +8,7 @@ function btg.buildMenu()
 		author = "bitrock, garlicmoon, Wheels, Kingslayer513",
 		version = ""..btg.version,
 		registerForDefaults = true,
+		registerForRefresh = true
 	}
 
 	local options = {
@@ -28,7 +28,6 @@ function btg.buildMenu()
 				btg.savedVars.enabled = value
 				btg.CheckActivation()
 			end,
-			reference = "btgControlEnabled"
 		},
 		{
 			type = "checkbox",
@@ -54,12 +53,7 @@ function btg.buildMenu()
 			width = "half",
 			func = function()
 				for i = 1, #btgData.buffs do
-					local control = _G["btgControlBuff"..i]
-
 					btg.savedVars.trackedBuffs[i] = false
-					control.value = false
-					control.label:SetColor(ZO_DEFAULT_DISABLED_COLOR:UnpackRGBA())
-					control.checkbox:SetText(control.uncheckedText)
 				end
 				btg.CheckActivation()
 			end,
@@ -93,7 +87,6 @@ function btg.buildMenu()
 				btg.savedVars.trackedBuffs[index] = value
 				btg.CheckActivation()
 			end,
-			reference = "btgControlBuff"..index
 		})
 	end
 
