@@ -3,7 +3,7 @@ function btg.OnAddOnLoaded( eventCode, addonName )
 
 	EVENT_MANAGER:UnregisterForEvent(btg.name, EVENT_ADD_ON_LOADED)
 
-	btg.savedVars = ZO_SavedVars:NewCharacterIdSettings("BuffTheGroupSavedVariables", 1, nil, btg.defaults, nil, GetWorldName())
+	btg.savedVars = ZO_SavedVars:NewCharacterIdSettings("BuffTheGroupSavedVariables", btg.variableVersion, nil, btg.defaults, nil, GetWorldName())
 	btg.InitializeControls()
 	SLASH_COMMANDS["/btg"] = btg.ToggleState
 	SLASH_COMMANDS["/btgrefresh"] = btg.CheckActivation
@@ -15,15 +15,15 @@ end
 
 function btg.ToggleState( )
 	btg.savedVars.enabled = not btg.savedVars.enabled
-	CHAT_SYSTEM:AddMessage("[BTG] " .. (btg.savedVars.enabled and "enabled" or "disabled"))
-	zo_callLater(btg.CheckActivation, 500)
+	CHAT_SYSTEM:AddMessage("[BTG] " .. (btg.savedVars.enabled and "Enabled" or "Disabled"))
+	btg.CheckActivation()
 end
 
 function btg.CheckActivation( eventCode )
 	-- Check wiki.esoui.com/AvA_Zone_Detection if we want to enable this for PvP
 	local zoneId = GetZoneId(GetUnitZoneIndex("player"))
 
-	if (btgData.zones[zoneId] and btg.savedVars.enabled or btg.savedVars.alwaysOn) then
+	if ((btgData.zones[zoneId] or btg.savedVars.alwaysOn) and btg.savedVars.enabled) then
 		btg.Reset()
 
 		-- Workaround for when the game reports that the player is not in a group shortly after zoning

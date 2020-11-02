@@ -75,16 +75,16 @@ function btg.buildMenu()
 		}
 	}
 
-	for index, buff in ipairs(btgData.buffs) do
+	for i, buff in ipairs(btgData.buffs) do
 		table.insert(options, #options-1, {
 			type = "checkbox",
 			name = buff,
-			default = index == 1,
+			default = btg.defaults.trackedBuffs[i],
 			getFunc = function()
-				return btg.savedVars.trackedBuffs[index]
+				return btg.savedVars.trackedBuffs[i]
 			end,
 			setFunc = function(value)
-				btg.savedVars.trackedBuffs[index] = value
+				btg.savedVars.trackedBuffs[i] = value
 				btg.CheckActivation()
 			end,
 		})

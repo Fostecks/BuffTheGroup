@@ -98,13 +98,14 @@ btgData = {
 btg = {
 	name = "BuffTheGroup",
 	version = "2.0.0",
+	variableVersion = 2,
 
 	defaults = {
 		framePositions = {},
 		maxRows = 6,
 		enabled = true,
 		alwaysOn = false,
-		trackedBuffs = btgUtil.FillTable(#btgData.buffs, false),
+		trackedBuffs = {},
 	},
 
 	showUI = false,
@@ -119,6 +120,8 @@ btg = {
 }
 
 for i = 1, #btgData.buffs do
+	btg.defaults.trackedBuffs[i] = i == 1
+
 	btg.defaults.framePositions[i] = {
 		left = 1300,
 		top = 150 + (i-1)*85,
