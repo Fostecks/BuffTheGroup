@@ -17,7 +17,7 @@
 				</Label>
 				<Label name="$(parent)Stat" font="$(GAMEPAD_MEDIUM_FONT)|$(KB_17)|soft-shadow-thin" wrapMode="TRUNCATE" horizontalAlignment="RIGHT" verticalAlignment="CENTER">
 					<Anchor point="RIGHT" offsetX="-4" />
-					<Dimensions x="26" y="24" />
+					<Dimensions x="50" y="24" />
 				</Label>
 			</Controls>
 		</Control>
