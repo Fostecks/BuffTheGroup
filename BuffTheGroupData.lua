@@ -104,9 +104,10 @@ btg = {
 		framePositions = {},
 		maxRows = 6,
 		enabled = true,
-		alwaysOn = false,
 		trackedBuffs = {},
 	},
+
+	debug = false,
 
 	showUI = false,
 	groupSize = 0,

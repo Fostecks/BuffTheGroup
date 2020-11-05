@@ -23,24 +23,28 @@ function btg.CheckActivation( eventCode )
 	-- Check wiki.esoui.com/AvA_Zone_Detection if we want to enable this for PvP
 	local zoneId = GetZoneId(GetUnitZoneIndex("player"))
 
-	if ((btgData.zones[zoneId] or btg.savedVars.alwaysOn) and btg.savedVars.enabled) then
+	if (((btgData.zones[zoneId] and GetGroupSize() > 1) or btg.debug) and btg.savedVars.enabled) then
 		btg.Reset()
 
 		-- Workaround for when the game reports that the player is not in a group shortly after zoning
 		if (btg.groupSize == 0) then
-			zo_callLater(function() if (btg.groupSize > 0) then btg.Reset() end end, 5000)
+			zo_callLater(function() if (GetGroupSize() > 1) then btg.CheckActivation() end end, 5000)
 		end
 
 		if (not btg.showUI) then
 			btg.showUI = true
 
+			EVENT_MANAGER:RegisterForEvent(btg.name, EVENT_UNIT_CREATED, btg.GroupUpdate)
+			EVENT_MANAGER:AddFilterForEvent(btg.name, EVENT_UNIT_CREATED, REGISTER_FILTER_UNIT_TAG_PREFIX, "group")
 			EVENT_MANAGER:RegisterForEvent(btg.name, EVENT_GROUP_MEMBER_JOINED, btg.GroupUpdate)
 			EVENT_MANAGER:RegisterForEvent(btg.name, EVENT_GROUP_MEMBER_LEFT, btg.GroupUpdate)
 			EVENT_MANAGER:RegisterForEvent(btg.name, EVENT_GROUP_MEMBER_ROLE_CHANGED, btg.GroupMemberRoleChanged)
 			EVENT_MANAGER:RegisterForEvent(btg.name, EVENT_GROUP_SUPPORT_RANGE_UPDATE, btg.GroupSupportRangeUpdate)
 			EVENT_MANAGER:RegisterForEvent(btg.name, EVENT_EFFECT_CHANGED, btg.EffectChanged)
 			EVENT_MANAGER:RegisterForUpdate(btg.name.."Cycle", 100, btg.refreshUI)
-			EVENT_MANAGER:AddFilterForEvent(btg.name, EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG_PREFIX, "group")
+			if(not btg.debug) then
+				EVENT_MANAGER:AddFilterForEvent(btg.name, EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG_PREFIX, "group")
+			end
 		end
 		for index, fragment in pairs(btg.fragments) do
 			if(btg.savedVars.trackedBuffs[index]) then
@@ -55,6 +59,7 @@ function btg.CheckActivation( eventCode )
 		if (btg.showUI) then
 			btg.showUI = false
 
+			EVENT_MANAGER:UnregisterForEvent(btg.name, EVENT_UNIT_CREATED)
 			EVENT_MANAGER:UnregisterForEvent(btg.name, EVENT_GROUP_MEMBER_JOINED)
 			EVENT_MANAGER:UnregisterForEvent(btg.name, EVENT_GROUP_MEMBER_LEFT)
 			EVENT_MANAGER:UnregisterForEvent(btg.name, EVENT_GROUP_MEMBER_ROLE_CHANGED)
@@ -73,7 +78,7 @@ function btg.CheckActivation( eventCode )
 end
 
 function btg.GroupUpdate( eventCode )
-	zo_callLater(btg.Reset, 500)
+	zo_callLater(btg.CheckActivation, 500)
 end
 
 function btg.GroupMemberRoleChanged( eventCode, unitTag, newRole )

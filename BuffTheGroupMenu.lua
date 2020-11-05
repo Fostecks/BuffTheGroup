@@ -30,19 +30,6 @@ function btg.buildMenu()
 			end,
 		},
 		{
-			type = "checkbox",
-			name = "Always On",
-			tooltip = "Buff trackers will be permanently visible",
-			default = btg.defaults.alwaysOn,
-			getFunc = function()
-				return btg.savedVars.alwaysOn
-			end,
-			setFunc = function(value)
-				btg.savedVars.alwaysOn = value
-				btg.CheckActivation()
-			end,
-		},
-		{
 			type = "header",
 			name = "Buffs",
 		},
