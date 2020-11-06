@@ -32,7 +32,7 @@ function btg.buildMenu()
 		{
 			type = "checkbox",
 			name = "Gradient Mode",
-			tooltip = "Toggles the UI",
+			tooltip = "Changes whether the buff duration will decay using a color gradient",
 			default = btg.defaults.gradientMode,
 			getFunc = function()
 				return btg.savedVars.gradientMode
