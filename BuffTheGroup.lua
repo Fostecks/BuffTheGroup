@@ -208,10 +208,10 @@ function btg.Reset( )
 
 				if (j == 1) then
 					btg.frames[i].panels[j].panel:SetAnchor(TOPLEFT, btgFrame, TOPLEFT, 0, 0)
-				elseif (j <= btg.savedVars.maxRows) then
+				elseif (j <= btg.maxRows) then
 					btg.frames[i].panels[j].panel:SetAnchor(TOPLEFT, btg.frames[i].panels[j - 1].panel, BOTTOMLEFT, 0, 0)
 				else
-					btg.frames[i].panels[j].panel:SetAnchor(TOPLEFT, btg.frames[i].panels[j - btg.savedVars.maxRows].panel, TOPRIGHT, 0, 0)
+					btg.frames[i].panels[j].panel:SetAnchor(TOPLEFT, btg.frames[i].panels[j - btg.maxRows].panel, TOPRIGHT, 0, 0)
 				end
 
 				btg.frames[i].panels[j].panel:SetHidden(false)
@@ -232,10 +232,10 @@ function btg.UpdateStatus( buffIndex, unitTag )
 	if(buffData.endTime) then
 		local buffRemaining = buffData.endTime - now
 
-		local progress = btgUtil.Clamp(1 - buffRemaining / buffData.buffDuration, 0, 1)
-		local r, g, b = btgUtil.Interpolate(btg.startR, btg.endR, progress) / 255,
-		                btgUtil.Interpolate(btg.startG, btg.endG, progress) / 255,
-		                btgUtil.Interpolate(btg.startB, btg.endB, progress) / 255
+		local progress = btg.savedVars.gradientMode and btgUtil.Clamp(1 - buffRemaining / buffData.buffDuration, 0, 1) or 0
+		local r, g, b = (btg.savedVars.gradientMode and btgUtil.Interpolate(btg.startR, btg.endR, progress) or btg.startR) / 255,
+		                (btg.savedVars.gradientMode and btgUtil.Interpolate(btg.startG, btg.endG, progress) or btg.startG) / 255,
+		                (btg.savedVars.gradientMode and btgUtil.Interpolate(btg.startB, btg.endB, progress) or btg.startB) / 255
 
 		if (buffRemaining > 0) then
 			panel.stat:SetText(string.format("%.1f", buffRemaining))

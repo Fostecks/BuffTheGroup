@@ -101,10 +101,10 @@ btg = {
 	variableVersion = 2,
 
 	defaults = {
-		framePositions = {},
-		maxRows = 6,
 		enabled = true,
+		gradientMode = true,
 		trackedBuffs = {},
+		framePositions = {},
 	},
 
 	debug = false,
@@ -118,6 +118,7 @@ btg = {
 
 	startR = 117, startG = 222, startB = 120,
 	endR = 222, endG = 117, endB = 117,
+	maxRows = 6,
 }
 
 for i = 1, #btgData.buffs do

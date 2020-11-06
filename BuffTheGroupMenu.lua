@@ -30,6 +30,18 @@ function btg.buildMenu()
 			end,
 		},
 		{
+			type = "checkbox",
+			name = "Gradient Mode",
+			tooltip = "Toggles the UI",
+			default = btg.defaults.gradientMode,
+			getFunc = function()
+				return btg.savedVars.gradientMode
+			end,
+			setFunc = function(value)
+				btg.savedVars.gradientMode = value
+			end,
+		},
+		{
 			type = "header",
 			name = "Buffs",
 		},
