@@ -1,4 +1,4 @@
-BuffTheGroupData = {
+btgData = {
 	zones = {
 		-- DUNGEONS
 		[ 11] = 0, -- Vaults of Madness	
@@ -61,30 +61,71 @@ BuffTheGroupData = {
 	},
 	
 	--- better to use effect names since one effect can come from many IDs (e.g. Major Slayer: Lokk, MA, WM)
-	buffSelectionList = {
-		[1] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61771)),  -- Powerful Assault
-		[2] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(121871)), -- Major Slayer
-		[3] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(120015)), -- Major Courage
-		[4] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(120013)), -- Major Force
-		[5] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(62195)),  -- Major Berserk
-		[6] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(62636)),  -- Minor Berserk
-		[7] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(121878)), -- Minor Courage
-		[8] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(120017)), -- Minor Sorcery
-		[9] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(120028)), -- Minor Prophecy
+	buffs = {
+		[1]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61771)),  -- Powerful Assault
+		[2]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(121871)), -- Major Slayer
+		[3]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(120015)), -- Major Courage
+		[4]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(120013)), -- Major Force
+		[5]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(62195)),  -- Major Berserk
+		[6]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(62636)),  -- Minor Berserk
+		[7]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(121878)), -- Minor Courage
+		[8]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(120017)), -- Minor Sorcery
+		[9]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(120028)), -- Minor Prophecy
 		[10] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(118366)), -- Empower
-
 	},
 
-	iconTable = {
-		[1] = "/esoui/art/icons/ability_healer_019.dds",
-		[2] = "/esoui/art/icons/procs_006.dds",
-		[3] = "/esoui/art/icons/ability_mage_045.dds",
-		[4] = "/esoui/art/icons/ability_buff_major_force.dds",
-		[5] = "/esoui/art/icons/ability_buff_major_berserk.dds",
-		[6] = '/esoui/art/icons/ability_buff_minor_berserk.dds',
-		[7] = '/esoui/art/icons/ability_mage_045.dds',
-		[8] = '/esoui/art/icons/ability_buff_minor_sorcery.dds',
-		[9] = '/esoui/art/icons/ability_buff_minor_prophecy.dds',
-		[10] = '/esoui/art/icons/ability_buff_major_empower.dds',
+	buffIcons = {
+		[1]  = "/esoui/art/icons/ability_healer_019.dds",          -- Powerful Assault
+		[2]  = "/esoui/art/icons/procs_006.dds",                   -- Major Slayer
+		[3]  = "/esoui/art/icons/ability_mage_045.dds",            -- Major Courage
+		[4]  = "/esoui/art/icons/ability_buff_major_force.dds",    -- Major Force
+		[5]  = "/esoui/art/icons/ability_buff_major_berserk.dds",  -- Major Berserk
+		[6]  = '/esoui/art/icons/ability_buff_minor_berserk.dds',  -- Minor Berserk
+		[7]  = '/esoui/art/icons/ability_mage_045.dds',            -- Minor Courage
+		[8]  = '/esoui/art/icons/ability_buff_minor_sorcery.dds',  -- Minor Sorcery
+		[9]  = '/esoui/art/icons/ability_buff_minor_prophecy.dds', -- Minor Prophecy
+		[10] = '/esoui/art/icons/ability_buff_major_empower.dds',  -- Empower
+	},
+
+	roleIcons = {
+		[LFG_ROLE_DPS] = "/esoui/art/lfg/lfg_icon_dps.dds",
+		[LFG_ROLE_TANK] = "/esoui/art/lfg/lfg_icon_tank.dds",
+		[LFG_ROLE_HEAL] = "/esoui/art/lfg/lfg_icon_healer.dds",
+		[LFG_ROLE_INVALID] = "/esoui/art/crafting/gamepad/crafting_alchemy_trait_unknown.dds",
 	},
 }
+
+btg = {
+	name = "BuffTheGroup",
+	version = "2.0.0",
+	variableVersion = 2,
+
+	defaults = {
+		enabled = true,
+		gradientMode = true,
+		trackedBuffs = {},
+		framePositions = {},
+	},
+
+	debug = false,
+
+	showUI = false,
+	groupSize = 0,
+	units = {},
+	panels = {},
+	frames = {},
+	fragments = {},
+
+	startR = 117, startG = 222, startB = 120,
+	endR = 222, endG = 117, endB = 117,
+	maxRows = 6,
+}
+
+for i = 1, #btgData.buffs do
+	btg.defaults.trackedBuffs[i] = i == 1
+
+	btg.defaults.framePositions[i] = {
+		left = 1300,
+		top = 150 + (i-1)*85,
+	}
+end
