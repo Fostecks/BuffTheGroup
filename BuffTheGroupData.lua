@@ -108,7 +108,7 @@ btgData = {
 btg = {
 	name = "BuffTheGroup",
 	version = "2.1.0",
-	variableVersion = 3,
+	variableVersion = 2,
 
 	defaults = {
 		enabled = true,
