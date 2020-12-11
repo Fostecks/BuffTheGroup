@@ -69,9 +69,14 @@ btgData = {
 		[5]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(62195)),  -- Major Berserk
 		[6]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(62636)),  -- Minor Berserk
 		[7]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(121878)), -- Minor Courage
-		[8]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(120017)), -- Minor Sorcery
-		[9]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(120028)), -- Minor Prophecy
-		[10] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(118366)), -- Empower
+		[8]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61687)), -- Major Sorcery
+		[9]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(120017)), -- Minor Sorcery
+		[10]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61665)), -- Major Brutality
+		[11]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(120028)), -- Minor Prophecy
+		[12]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61694)), -- Major Resolve
+		[13]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61693)), -- Minor Resolve
+		[14]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61706)), -- Minor Intellect
+		[15] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(118366)), -- Empower
 	},
 
 	buffIcons = {
@@ -82,9 +87,14 @@ btgData = {
 		[5]  = "/esoui/art/icons/ability_buff_major_berserk.dds",  -- Major Berserk
 		[6]  = '/esoui/art/icons/ability_buff_minor_berserk.dds',  -- Minor Berserk
 		[7]  = '/esoui/art/icons/ability_mage_045.dds',            -- Minor Courage
-		[8]  = '/esoui/art/icons/ability_buff_minor_sorcery.dds',  -- Minor Sorcery
-		[9]  = '/esoui/art/icons/ability_buff_minor_prophecy.dds', -- Minor Prophecy
-		[10] = '/esoui/art/icons/ability_buff_major_empower.dds',  -- Empower
+		[8]  = '/esoui/art/icons/ability_buff_major_sorcery.dds',  -- Major Sorcery
+		[9]  = '/esoui/art/icons/ability_buff_minor_sorcery.dds',  -- Minor Sorcery
+		[10]  = '/esoui/art/icons/ability_buff_major_brutality.dds',  -- Major Brutality
+		[11]  = '/esoui/art/icons/ability_buff_minor_prophecy.dds', -- Minor Prophecy
+		[12]  = '/esoui/art/icons/ability_buff_major_resolve.dds', -- Major Resolve
+		[13]  = '/esoui/art/icons/ability_buff_minor_resolve.dds', -- Minor Resolve
+		[14]  = '/esoui/art/icons/ability_buff_minor_intellect.dds', -- Minor Intellect
+		[15] = '/esoui/art/icons/ability_buff_major_empower.dds',  -- Empower
 	},
 
 	roleIcons = {
@@ -97,8 +107,8 @@ btgData = {
 
 btg = {
 	name = "BuffTheGroup",
-	version = "2.0.0",
-	variableVersion = 2,
+	version = "2.1.0",
+	variableVersion = 3,
 
 	defaults = {
 		enabled = true,
