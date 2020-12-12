@@ -143,7 +143,7 @@ function btg.InitializeControls( )
 		}
 
 		for j = 1, GROUP_SIZE_MAX do
-			local panel = wm:CreateControlFromVirtual("btgPanel" .. i .. j, frame, "btgPanel")
+			local panel = wm:CreateControlFromVirtual("btgPanel" .. i .. "_" .. j, frame, "btgPanel")
 
 			btg.frames[i].panels[j] = {
 				panel = panel,
