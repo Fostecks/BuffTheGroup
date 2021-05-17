@@ -7,7 +7,7 @@
 ## Title: Buff The Group
 ## Description: A small simple UI that allows you to track a single buff across all your group members.The UI appears when you enter a group zone (Trial, Dungeon, Arena).
 ## Author: bitrock, garlicmoon, Wheels
-## Version: 2.1.0
+## Version: 2.2.0
 ## APIVersion: 100033
 ## SavedVariables: BuffTheGroupSavedVariables
 ## DependsOn: LibAddonMenu-2.0

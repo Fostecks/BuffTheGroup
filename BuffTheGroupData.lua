@@ -58,6 +58,7 @@ btgData = {
 		[1051] = 0, -- Cloudrest
 		[1121] = 0, -- Sunspire
 		[1196] = 0, -- Kyne's Aegis
+		[1263] = 0, -- Rockgrove
 	},
 	
 	--- better to use effect names since one effect can come from many IDs (e.g. Major Slayer: Lokk, MA, WM)
@@ -107,7 +108,7 @@ btgData = {
 
 btg = {
 	name = "BuffTheGroup",
-	version = "2.1.0",
+	version = "2.2.0",
 	variableVersion = 2,
 
 	defaults = {
