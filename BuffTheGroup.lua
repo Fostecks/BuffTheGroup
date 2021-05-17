@@ -22,7 +22,6 @@ end
 function btg.CheckActivation( eventCode )
 	-- Check wiki.esoui.com/AvA_Zone_Detection if we want to enable this for PvP
 	local zoneId = GetZoneId(GetUnitZoneIndex("player"))
-
 	if (((btgData.zones[zoneId] and GetGroupSize() > 1) or btg.debug) and btg.savedVars.enabled) then
 		btg.Reset()
 

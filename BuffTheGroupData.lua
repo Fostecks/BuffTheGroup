@@ -43,6 +43,8 @@ btgData = {
 		[1153] = 0, -- Unhallowed Grave
 		[1197] = 0, -- Stone Garden
 		[1201] = 0, -- Castle Thorn
+		[1228] = 0, -- Black Drake Villa
+		[1229] = 0, -- The Cauldron
 
 		-- ARENAS
 		[ 635] = 0, -- Dragonstar Arena
@@ -78,6 +80,7 @@ btgData = {
 		[13]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61693)), -- Minor Resolve
 		[14]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61706)), -- Minor Intellect
 		[15] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(118366)), -- Empower
+		[16] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61709)), -- Major Heroism
 	},
 
 	buffIcons = {
@@ -96,6 +99,7 @@ btgData = {
 		[13]  = '/esoui/art/icons/ability_buff_minor_resolve.dds', -- Minor Resolve
 		[14]  = '/esoui/art/icons/ability_buff_minor_intellect.dds', -- Minor Intellect
 		[15] = '/esoui/art/icons/ability_buff_major_empower.dds',  -- Empower
+		[16] = '/esoui/art/icons/ability_buff_major_heroism.dds',  -- Major Heroism
 	},
 
 	roleIcons = {
