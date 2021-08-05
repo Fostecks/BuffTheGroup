@@ -119,7 +119,7 @@ btgData = {
 
 btg = {
 	name = "BuffTheGroup",
-	version = "2.2.0",
+	version = "2.3.0",
 	variableVersion = 2,
 
 	defaults = {
