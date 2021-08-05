@@ -81,6 +81,10 @@ btgData = {
 		[14]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61706)), -- Minor Intellect
 		[15] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(118366)), -- Empower
 		[16] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61709)), -- Major Heroism
+		[17] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(40079)), -- Radiating Regeneration
+		[18] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61736)), -- Major Expedition
+
+
 	},
 
 	buffIcons = {
@@ -100,6 +104,9 @@ btgData = {
 		[14]  = '/esoui/art/icons/ability_buff_minor_intellect.dds', -- Minor Intellect
 		[15] = '/esoui/art/icons/ability_buff_major_empower.dds',  -- Empower
 		[16] = '/esoui/art/icons/ability_buff_major_heroism.dds',  -- Major Heroism
+		[17] = '/esoui/art/icons/ability_restorationstaff_002a.dds', -- Radiating Regeneration
+		[18] = '/esoui/art/icons/ability_buff_major_expedition.dds', -- Major Expedition
+
 	},
 
 	roleIcons = {
