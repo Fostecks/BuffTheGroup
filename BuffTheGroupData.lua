@@ -119,12 +119,13 @@ btgData = {
 
 btg = {
 	name = "BuffTheGroup",
-	version = "2.3.1",
+	version = "2.4.0",
 	variableVersion = 3,
 
 	defaults = {
 		enabled = true,
 		gradientMode = true,
+		showOnlyDPS = false,
 		trackedBuffs = {},
 		framePositions = {},
 	},

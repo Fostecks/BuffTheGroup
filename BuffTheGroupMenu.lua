@@ -42,6 +42,19 @@ function btg.buildMenu()
 			end,
 		},
 		{
+			type = "checkbox",
+			name = "Show Only DPS",
+			tooltip = "Shows only players marked as DPS in the BTG group frames",
+			default = btg.defaults.showOnlyDPS,
+			getFunc = function() 
+				return btg.savedVars.showOnlyDPS
+			end,
+			setFunc = function(value)
+				btg.savedVars.showOnlyDPS = value
+				zo_callLater(btg.CheckActivation, 500)
+			end,
+		},
+		{
 			type = "header",
 			name = "Buffs",
 		},

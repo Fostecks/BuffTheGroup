@@ -81,9 +81,11 @@ function btg.GroupUpdate( eventCode )
 end
 
 function btg.GroupMemberRoleChanged( eventCode, unitTag, newRole )
-	if (btg.units[unitTag]) then
+	local unit = btg.units[unitTag]
+	if (unit) then
 		for i = 1, #btgData.buffs do
-			btg.frames[i].panels[btg.units[unitTag].panelId].role:SetTexture(btgData.roleIcons[newRole])
+			btg.frames[i].panels[unit.panelId].role:SetTexture(btgData.roleIcons[newRole])
+			zo_callLater(btg.CheckActivation, 500)
 		end
 	end
 end
@@ -167,21 +169,30 @@ function btg.InitializeControls( )
 end
 
 function btg.Reset( )
+
+	for i = 1, #btgData.buffs do
+		for j = 1, GROUP_SIZE_MAX do
+			btg.frames[i].panels[j].panel:ClearAnchors()
+			btg.frames[i].panels[j].panel:SetHidden(true)
+		end
+	end
+
 	btg.groupSize = GetGroupSize()
 	btg.units = {}
 
 	for i = 1, #btgData.buffs do
 		_G["btgFrame"..i.."Icon"]:SetTexture(btgData.buffIcons[i])
 	end
-
+	local panelIndex = 1
 	for j = 1, GROUP_SIZE_MAX do
 		if (j <= btg.groupSize or j == 1 and btg.groupSize == 0) then
 			local unitTag = (j == 1 and btg.groupSize == 0) and "player" or GetGroupUnitTagByIndex(j)
 			btg.units[unitTag] = {
-				panelId = j,
+				panelId = panelIndex,
 				self = AreUnitsEqual("player", unitTag),
 				buffs = {},
 			}
+			panelIndex = panelIndex + 1
 			for i = 1, #btgData.buffs do
 				btg.units[unitTag].buffs[i] = {
 					hasBuff = false,
@@ -193,30 +204,33 @@ function btg.Reset( )
 	end
 
 	for i = 1, #btgData.buffs do
+		panelIndex = 1
 		for j = 1, GROUP_SIZE_MAX do
 			local soloPanel = j == 1 and btg.groupSize == 0
+			local unitTag = (soloPanel) and "player" or GetGroupUnitTagByIndex(j)
+			if (not btg.savedVars.showOnlyDPS or GetGroupMemberSelectedRole(unitTag) == LFG_ROLE_DPS) then
+				if (j <= btg.groupSize or soloPanel) then
 
-			if (j <= btg.groupSize or soloPanel) then
-				local unitTag = (soloPanel) and "player" or GetGroupUnitTagByIndex(j)
+					btg.frames[i].panels[panelIndex].name:SetText(GetUnitDisplayName(unitTag))
+					btg.frames[i].panels[panelIndex].role:SetTexture(btgData.roleIcons[GetGroupMemberSelectedRole(unitTag)])
 
-				btg.frames[i].panels[j].name:SetText(GetUnitDisplayName(unitTag))
-				btg.frames[i].panels[j].role:SetTexture(btgData.roleIcons[GetGroupMemberSelectedRole(unitTag)])
+					btg.UpdateStatus(i, unitTag)
+					btg.UpdateRange(i, panelIndex, IsUnitInGroupSupportRange(unitTag))
 
-				btg.UpdateStatus(i, unitTag)
-				btg.UpdateRange(i, j, IsUnitInGroupSupportRange(unitTag))
+					if (panelIndex == 1) then
+						btg.frames[i].panels[panelIndex].panel:SetAnchor(TOPLEFT, btgFrame, TOPLEFT, 0, 0)
+					elseif (panelIndex <= btg.maxRows) then
+						btg.frames[i].panels[panelIndex].panel:SetAnchor(TOPLEFT, btg.frames[i].panels[panelIndex - 1].panel, BOTTOMLEFT, 0, 0)
+					else
+						btg.frames[i].panels[panelIndex].panel:SetAnchor(TOPLEFT, btg.frames[i].panels[panelIndex - btg.maxRows].panel, TOPRIGHT, 0, 0)
+					end
 
-				if (j == 1) then
-					btg.frames[i].panels[j].panel:SetAnchor(TOPLEFT, btgFrame, TOPLEFT, 0, 0)
-				elseif (j <= btg.maxRows) then
-					btg.frames[i].panels[j].panel:SetAnchor(TOPLEFT, btg.frames[i].panels[j - 1].panel, BOTTOMLEFT, 0, 0)
+					btg.frames[i].panels[panelIndex].panel:SetHidden(false)
 				else
-					btg.frames[i].panels[j].panel:SetAnchor(TOPLEFT, btg.frames[i].panels[j - btg.maxRows].panel, TOPRIGHT, 0, 0)
+					btg.frames[i].panels[panelIndex].panel:SetAnchor(TOPLEFT, btgFrame, TOPLEFT, 0, 0)
+					btg.frames[i].panels[panelIndex].panel:SetHidden(true)
 				end
-
-				btg.frames[i].panels[j].panel:SetHidden(false)
-			else
-				btg.frames[i].panels[j].panel:SetAnchor(TOPLEFT, btgFrame, TOPLEFT, 0, 0)
-				btg.frames[i].panels[j].panel:SetHidden(true)
+				panelIndex = panelIndex + 1
 			end
 		end
 	end
