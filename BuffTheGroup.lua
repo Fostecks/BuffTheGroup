@@ -187,18 +187,20 @@ function btg.Reset( )
 	for j = 1, GROUP_SIZE_MAX do
 		if (j <= btg.groupSize or j == 1 and btg.groupSize == 0) then
 			local unitTag = (j == 1 and btg.groupSize == 0) and "player" or GetGroupUnitTagByIndex(j)
-			btg.units[unitTag] = {
-				panelId = panelIndex,
-				self = AreUnitsEqual("player", unitTag),
-				buffs = {},
-			}
-			panelIndex = panelIndex + 1
-			for i = 1, #btgData.buffs do
-				btg.units[unitTag].buffs[i] = {
-					hasBuff = false,
-					endTime = 0,
-					buffDuration = 0,
+			if (not btg.savedVars.showOnlyDPS or GetGroupMemberSelectedRole(unitTag) == LFG_ROLE_DPS) then
+				btg.units[unitTag] = {
+					panelId = panelIndex,
+					self = AreUnitsEqual("player", unitTag),
+					buffs = {},
 				}
+				panelIndex = panelIndex + 1
+				for i = 1, #btgData.buffs do
+					btg.units[unitTag].buffs[i] = {
+						hasBuff = false,
+						endTime = 0,
+						buffDuration = 0,
+					}
+				end
 			end
 		end
 	end
@@ -226,6 +228,7 @@ function btg.Reset( )
 					end
 
 					btg.frames[i].panels[panelIndex].panel:SetHidden(false)
+					d("i", i, "j", j, "panelIndex", panelIndex)
 				else
 					btg.frames[i].panels[panelIndex].panel:SetAnchor(TOPLEFT, btgFrame, TOPLEFT, 0, 0)
 					btg.frames[i].panels[panelIndex].panel:SetHidden(true)
