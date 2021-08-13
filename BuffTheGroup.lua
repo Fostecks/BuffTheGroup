@@ -228,7 +228,6 @@ function btg.Reset( )
 					end
 
 					btg.frames[i].panels[panelIndex].panel:SetHidden(false)
-					d("i", i, "j", j, "panelIndex", panelIndex)
 				else
 					btg.frames[i].panels[panelIndex].panel:SetAnchor(TOPLEFT, btgFrame, TOPLEFT, 0, 0)
 					btg.frames[i].panels[panelIndex].panel:SetHidden(true)
