@@ -221,10 +221,10 @@ function btg.Reset( )
 
 					if (panelIndex == 1) then
 						btg.frames[i].panels[panelIndex].panel:SetAnchor(TOPLEFT, btgFrame, TOPLEFT, 0, 0)
-					elseif (panelIndex <= btg.maxRows) then
+					elseif (panelIndex <= btg.savedVars.maxRows) then
 						btg.frames[i].panels[panelIndex].panel:SetAnchor(TOPLEFT, btg.frames[i].panels[panelIndex - 1].panel, BOTTOMLEFT, 0, 0)
 					else
-						btg.frames[i].panels[panelIndex].panel:SetAnchor(TOPLEFT, btg.frames[i].panels[panelIndex - btg.maxRows].panel, TOPRIGHT, 0, 0)
+						btg.frames[i].panels[panelIndex].panel:SetAnchor(TOPLEFT, btg.frames[i].panels[panelIndex - btg.savedVars.maxRows].panel, TOPRIGHT, 0, 0)
 					end
 
 					btg.frames[i].panels[panelIndex].panel:SetHidden(false)

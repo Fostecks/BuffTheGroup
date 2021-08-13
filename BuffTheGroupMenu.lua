@@ -55,6 +55,24 @@ function btg.buildMenu()
 			end,
 		},
 		{
+			type = "checkbox",
+			name = "Single Column Mode",
+			tooltip = "Lays out the frames in a single column instead of a 6x2 layout",
+			default = btg.defaults.singleColumnMode,
+			getFunc = function() 
+				return btg.savedVars.singleColumnMode
+			end,
+			setFunc = function(value)
+				btg.savedVars.singleColumnMode = value
+				if(value) then
+					btg.savedVars.maxRows = GROUP_SIZE_MAX
+				else
+					btg.savedVars.maxRows = 6
+				end
+				zo_callLater(btg.CheckActivation, 500)
+			end,
+		},
+		{
 			type = "header",
 			name = "Buffs",
 		},
