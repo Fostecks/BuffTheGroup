@@ -119,14 +119,17 @@ btgData = {
 
 btg = {
 	name = "BuffTheGroup",
-	version = "2.3.1",
+	version = "2.4.0",
 	variableVersion = 3,
 
 	defaults = {
 		enabled = true,
 		gradientMode = true,
+		showOnlyDPS = false,
+		singleColumnMode = false,
 		trackedBuffs = {},
 		framePositions = {},
+		maxRows = 6
 	},
 
 	debug = false,
@@ -140,7 +143,6 @@ btg = {
 
 	startR = 117, startG = 222, startB = 120,
 	endR = 222, endG = 117, endB = 117,
-	maxRows = 6,
 }
 
 for i = 1, #btgData.buffs do
