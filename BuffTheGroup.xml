@@ -1,5 +1,5 @@
 <GuiXml>
-	<Controls name="btgUI">
+	<Controls name="">
 		<Control name="btgPanel" resizeToFitDescendents="true" hidden="true" virtual="true">
 			<Controls>
 				<Backdrop name="$(parent)Backdrop">

@@ -83,6 +83,7 @@ btgData = {
 		[16] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61709)), -- Major Heroism
 		[17] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(40079)), -- Radiating Regeneration
 		[18] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61736)), -- Major Expedition
+		[19] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(163401)), -- Spalder of Ruin
 
 
 	},
@@ -106,6 +107,7 @@ btgData = {
 		[16] = '/esoui/art/icons/ability_buff_major_heroism.dds',  -- Major Heroism
 		[17] = '/esoui/art/icons/ability_restorationstaff_002a.dds', -- Radiating Regeneration
 		[18] = '/esoui/art/icons/ability_buff_major_expedition.dds', -- Major Expedition
+		[19] = '/esoui/art/icons/achievement_u30_groupboss5.dds', -- Spalder of Ruin
 
 	},
 
@@ -119,7 +121,7 @@ btgData = {
 
 btg = {
 	name = "BuffTheGroup",
-	version = "2.4.0",
+	version = "2.4.1",
 	variableVersion = 3,
 
 	defaults = {
