@@ -109,15 +109,6 @@ end
 function btg.EffectChanged( eventCode, changeType, effectSlot, effectName, unitTag, beginTime, endTime, stackCount, iconName, buffType, effectType, abilityType, statusEffectType, unitName, unitId, abilityId, sourceType )
 	-- format effectName so it's common across all languages
 	local formattedEffectName = zo_strformat(SI_ABILITY_NAME, effectName)
-	-- d("[formattedEffectName] " .. formattedEffectName)
-	-- d("[buffType] " .. buffType)
-	-- d("[changeType] " .. changeType)
-	-- d("[beginTime] " .. beginTime)
-	-- d("[endTime] " .. endTime)
-	-- d("[abilityType] " .. abilityType)
-	-- d("[effectType] " .. effectType)
-
-
 
 	for index, buff in pairs(btgData.buffs) do
 		if (btg.savedVars.trackedBuffs[index]) then
