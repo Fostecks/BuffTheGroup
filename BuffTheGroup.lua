@@ -210,7 +210,10 @@ function btg.Reset( )
 		_G["btgFrame"..i.."MinimalBackdrop"]:SetHidden(not btg.savedVars.minimalMode)
 		_G["btgFrame"..i.."Percent"]:SetHidden(not btg.savedVars.minimalMode)
 	end
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
 	local panelIndex = 1
 	for j = 1, GROUP_SIZE_MAX do
 		if (j <= btg.groupSize or j == 1 and btg.groupSize == 0) then
