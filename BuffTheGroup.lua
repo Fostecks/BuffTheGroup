@@ -115,6 +115,11 @@ function btg.EffectChanged( eventCode, changeType, effectSlot, effectName, unitT
 			if (buff == formattedEffectName and btg.units[unitTag]) then
 				if (changeType == EFFECT_RESULT_FADED) then
 					btg.units[unitTag].buffs[index].hasBuff = false
+					btg.units[unitTag].buffs[index].endTime = 0
+				elseif ((changeType == EFFECT_RESULT_GAINED or changeType == EFFECT_RESULT_UPDATED) and (beginTime == 0 or endTime == 0)) then -- gained permanent effect	
+					btg.units[unitTag].buffs[index].hasBuff = true
+					btg.units[unitTag].buffs[index].endTime = -1
+					btg.units[unitTag].buffs[index].buffDuration = -1
 				else
 					btg.units[unitTag].buffs[index].hasBuff = true
 					btg.units[unitTag].buffs[index].endTime = endTime
@@ -252,12 +257,21 @@ function btg.UpdateStatus( buffIndex, unitTag )
 		                (btg.savedVars.gradientMode and btgUtil.Interpolate(btg.startG, btg.endG, progress) or btg.startG) / 255,
 		                (btg.savedVars.gradientMode and btgUtil.Interpolate(btg.startB, btg.endB, progress) or btg.startB) / 255
 
+		
+
 		if (buffRemaining > 0) then
 			panel.stat:SetText(string.format("%.1f", buffRemaining))
 			if (unit.self) then
 				panel.bg:SetCenterColor(r, g, b, 1-0.5*progress)
 			else
 				panel.bg:SetCenterColor(r, g, b, 0.8-0.4*progress)
+			end
+		elseif (buffData.endTime == -1) then 
+			panel.stat:SetText("")
+			if (unit.self) then
+				panel.bg:SetCenterColor(r, g, b, 1)
+			else
+				panel.bg:SetCenterColor(r, g, b, 0.8)
 			end
 		else
 			panel.bg:SetCenterColor(0, 0, 0, 0.5)
