@@ -5,7 +5,7 @@ function btg.buildMenu()
 		type = "panel",
 		name = btg.name,
 		displayName = "BuffTheGroup",
-		author = "bitrock, garlicmoon, Wheels, Kingslayer513",
+		author = "bitrock, garlicmoon",
 		version = ""..btg.version,
 		registerForDefaults = true,
 		registerForRefresh = true
@@ -69,6 +69,19 @@ function btg.buildMenu()
 				else
 					btg.savedVars.maxRows = 6
 				end
+				zo_callLater(btg.CheckActivation, 500)
+			end,
+		},
+		{
+			type = "checkbox",
+			name = "Minimal Mode",
+			tooltip = "Reduces the UI to a simple percentage display. The color background represents the time left on the buff. Respects the \'Show Only DPS\' option.",
+			default = btg.defaults.minimalMode,
+			getFunc = function() 
+				return btg.savedVars.minimalMode
+			end,
+			setFunc = function(value)
+				btg.savedVars.minimalMode = value
 				zo_callLater(btg.CheckActivation, 500)
 			end,
 		},

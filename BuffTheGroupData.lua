@@ -121,7 +121,7 @@ btgData = {
 
 btg = {
 	name = "BuffTheGroup",
-	version = "2.4.1",
+	version = "2.5.0",
 	variableVersion = 3,
 
 	defaults = {
@@ -129,6 +129,7 @@ btg = {
 		gradientMode = true,
 		showOnlyDPS = false,
 		singleColumnMode = false,
+		minimalMode = false,
 		trackedBuffs = {},
 		framePositions = {},
 		maxRows = 6

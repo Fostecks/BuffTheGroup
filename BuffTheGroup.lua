@@ -99,9 +99,26 @@ function btg.GroupSupportRangeUpdate( eventCode, unitTag, status )
 end
 
 function btg.refreshUI()
-	for unitTag, _ in pairs(btg.units) do
-		for i = 1, #btgData.buffs do
-			btg.UpdateStatus(i, unitTag)
+	for i = 1, #btgData.buffs do
+		local unitsWithBuff = 0
+		local minBuffDuration = 999
+		local minBuffEndTime
+		for unitTag, unit in pairs(btg.units) do
+			if(btg.savedVars.minimalMode) then
+				local buffData = unit.buffs[i]	
+				if(buffData and buffData.hasBuff) then
+					unitsWithBuff = unitsWithBuff + 1
+					if ( minBuffDuration > buffData.buffDuration ) then
+						minBuffDuration = buffData.buffDuration
+						minBuffEndTime = buffData.endTime
+					end
+				end
+			else
+				btg.UpdateStatus(i, unitTag)
+			end
+		end
+		if(btg.savedVars.minimalMode) then
+			btg.UpdatePercent(i, unitsWithBuff, minBuffDuration, minBuffEndTime)
 		end
 	end
 end
@@ -147,6 +164,10 @@ function btg.InitializeControls( )
 			frame = frame,
 			panels = {},
 		}
+		
+		_G["btgFrame"..i.."MinimalBackdrop"]:SetEdgeColor(0, 0, 0, 0)
+		_G["btgFrame"..i.."MinimalBackdrop"]:SetCenterColor(0, 0, 0, 0.5)
+
 
 		for j = 1, GROUP_SIZE_MAX do
 			local panel = wm:CreateControlFromVirtual("btgPanel" .. i .. "_" .. j, frame, "btgPanel")
@@ -156,7 +177,6 @@ function btg.InitializeControls( )
 				bg = panel:GetNamedChild("Backdrop"),
 				name = panel:GetNamedChild("Name"),
 				role = panel:GetNamedChild("Role"),
-				icon = panel:GetNamedChild("Icon"),
 				stat = panel:GetNamedChild("Stat"),
 			}
 
@@ -184,10 +204,13 @@ function btg.Reset( )
 
 	btg.groupSize = GetGroupSize()
 	btg.units = {}
-
+	
 	for i = 1, #btgData.buffs do
 		_G["btgFrame"..i.."Icon"]:SetTexture(btgData.buffIcons[i])
+		_G["btgFrame"..i.."MinimalBackdrop"]:SetHidden(not btg.savedVars.minimalMode)
+		_G["btgFrame"..i.."Percent"]:SetHidden(not btg.savedVars.minimalMode)
 	end
+
 	local panelIndex = 1
 	for j = 1, GROUP_SIZE_MAX do
 		if (j <= btg.groupSize or j == 1 and btg.groupSize == 0) then
@@ -232,7 +255,7 @@ function btg.Reset( )
 						btg.frames[i].panels[panelIndex].panel:SetAnchor(TOPLEFT, btg.frames[i].panels[panelIndex - btg.savedVars.maxRows].panel, TOPRIGHT, 0, 0)
 					end
 
-					btg.frames[i].panels[panelIndex].panel:SetHidden(false)
+					btg.frames[i].panels[panelIndex].panel:SetHidden(btg.savedVars.minimalMode)
 				else
 					btg.frames[i].panels[panelIndex].panel:SetAnchor(TOPLEFT, btgFrame, TOPLEFT, 0, 0)
 					btg.frames[i].panels[panelIndex].panel:SetHidden(true)
@@ -281,6 +304,34 @@ function btg.UpdateStatus( buffIndex, unitTag )
 			end
 		end
 	end
+end
+
+function btg.UpdatePercent( i, unitsWithBuff, minBuffDuration, minBuffEndTime )
+	_G["btgFrame"..i.."Percent"]:SetText(string.format("%i%%", unitsWithBuff * 100 / btg.groupSize))
+	_G["btgFrame"..i.."MinimalBackdrop"]:SetCenterColor(0, 0, 0, 0.5)
+
+	local now = GetFrameTimeMilliseconds() / 1000
+
+
+	if(minBuffEndTime) then
+		
+		local buffRemaining = minBuffEndTime - now
+
+		local progress = btg.savedVars.gradientMode and btgUtil.Clamp(1 - buffRemaining / minBuffDuration, 0, 1) or 0
+		local r, g, b = (btg.savedVars.gradientMode and btgUtil.Interpolate(btg.startR, btg.endR, progress) or btg.startR) / 255,
+		                (btg.savedVars.gradientMode and btgUtil.Interpolate(btg.startG, btg.endG, progress) or btg.startG) / 255,
+		                (btg.savedVars.gradientMode and btgUtil.Interpolate(btg.startB, btg.endB, progress) or btg.startB) / 255
+		
+		if (buffRemaining > 0 or minBuffEndTime == -1) then
+			_G["btgFrame"..i.."MinimalBackdrop"]:SetCenterColor(r, g, b, 1)
+		else
+			_G["btgFrame"..i.."MinimalBackdrop"]:SetCenterColor(0, 0, 0, 0.5)
+		end
+
+
+
+	end
+
 end
 
 function btg.UpdateRange( buffIndex, panelId, status )
