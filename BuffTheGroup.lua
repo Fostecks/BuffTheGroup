@@ -210,10 +210,7 @@ function btg.Reset( )
 		_G["btgFrame"..i.."MinimalBackdrop"]:SetHidden(not btg.savedVars.minimalMode)
 		_G["btgFrame"..i.."Percent"]:SetHidden(not btg.savedVars.minimalMode)
 	end
-<<<<<<< HEAD
 
-=======
->>>>>>> master
 	local panelIndex = 1
 	for j = 1, GROUP_SIZE_MAX do
 		if (j <= btg.groupSize or j == 1 and btg.groupSize == 0) then
@@ -328,6 +325,7 @@ function btg.UpdatePercent( i, unitsWithBuff, minBuffDuration, minBuffEndTime )
 		if (buffRemaining > 0 or minBuffEndTime == -1) then
 			_G["btgFrame"..i.."MinimalBackdrop"]:SetCenterColor(r, g, b, 1)
 		else
+			_G["btgFrame"..i.."Percent"]:SetText(string.format("%i%%", 0))
 			_G["btgFrame"..i.."MinimalBackdrop"]:SetCenterColor(0, 0, 0, 0.5)
 		end
 
