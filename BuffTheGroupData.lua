@@ -64,6 +64,7 @@ btgData = {
 	},
 	
 	--- better to use effect names since one effect can come from many IDs (e.g. Major Slayer: Lokk, MA, WM)
+	--- Bad unsorted order, but changing it now would cause savedVars to get wrong values
 	buffs = {
 		[1]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61771)),  -- Powerful Assault
 		[2]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(121871)), -- Major Slayer
@@ -84,8 +85,19 @@ btgData = {
 		[17] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(40079)), -- Radiating Regeneration
 		[18] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61736)), -- Major Expedition
 		[19] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(163401)), -- Spalder of Ruin
+		[20] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(88490)), -- Minor Toughness
+		[21] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61704)), -- Minor Endurance
 
+		[22]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(15776)),   -- Flaming Oil
+		[23]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(32036)),   -- Meatbag Catapult
+		[24]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(159612)),  -- Plague Carrier (Plaguebreak)
 
+	},
+
+	debuffIndexes = {
+		[22] = true, 
+		[23] = true, 
+		[24] = true,
 	},
 
 	buffIcons = {
@@ -108,6 +120,13 @@ btgData = {
 		[17] = '/esoui/art/icons/ability_restorationstaff_002a.dds', -- Radiating Regeneration
 		[18] = '/esoui/art/icons/ability_buff_major_expedition.dds', -- Major Expedition
 		[19] = '/esoui/art/icons/achievement_u30_groupboss5.dds', -- Spalder of Ruin
+		[20] = '/esoui/art/icons/ability_buff_minor_toughness.dds', -- Minor Toughness
+		[21] = '/esoui/art/icons/ability_buff_minor_endurance.dds', -- Minor Endurance
+
+		[22] = "/esoui/art/icons/ava_siege_weapon_002.dds", -- Flaming Oil
+		[23] = "/esoui/art/icons/ability_healer_032.dds", -- Meatbag Catapult
+		[24] = "/esoui/art/icons/death_recap_disease2_dot_heavy.dds", -- Plague Carrier (Plaguebreak)
+		
 
 	},
 
@@ -121,8 +140,8 @@ btgData = {
 
 btg = {
 	name = "BuffTheGroup",
-	version = "2.5.0",
-	variableVersion = 3,
+	version = "3.0.0",
+	variableVersion = 4,
 
 	defaults = {
 		enabled = true,
@@ -132,7 +151,12 @@ btg = {
 		minimalMode = false,
 		trackedBuffs = {},
 		framePositions = {},
-		maxRows = 6
+		maxRows = 6,
+		startR = 117, startG = 222, startB = 120,
+		endR = 222, endG = 117, endB = 117,
+		dStartR = 200, dStartG = 200, dStartB = 117,
+		dEndR = 222, dEndG = 117, dEndB = 117,
+
 	},
 
 	debug = false,
@@ -144,8 +168,6 @@ btg = {
 	frames = {},
 	fragments = {},
 
-	startR = 117, startG = 222, startB = 120,
-	endR = 222, endG = 117, endB = 117,
 }
 
 for i = 1, #btgData.buffs do
@@ -153,6 +175,6 @@ for i = 1, #btgData.buffs do
 
 	btg.defaults.framePositions[i] = {
 		left = 1300,
-		top = 150 + (i-1)*85,
+		top = 150 + (i-1)*10,
 	}
 end
