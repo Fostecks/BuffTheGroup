@@ -22,7 +22,7 @@ end
 function btg.CheckActivation( eventCode )
 	-- Check wiki.esoui.com/AvA_Zone_Detection if we want to enable this for PvP
 	local zoneId = GetZoneId(GetUnitZoneIndex("player"))
-	if (((btgData.zones[zoneId] and GetGroupSize() > 1) or (IsPlayerInAvAWorld() and GetGroupSize() > 1) or btg.debug) and btg.savedVars.enabled) then
+	if (((btgData.zones[zoneId] and GetGroupSize() > 1) or btg.debug) and btg.savedVars.enabled) then
 		btg.Reset()
 
 		-- Workaround for when the game reports that the player is not in a group shortly after zoning
@@ -272,30 +272,25 @@ function btg.UpdateStatus( buffIndex, unitTag )
 	local panel = btg.frames[buffIndex].panels[unit.panelId]
 	local now = GetFrameTimeMilliseconds() / 1000
 
-	if(buffData.endTime) then
+	if( buffData.endTime ) then
 		local buffRemaining = buffData.endTime - now
 
-		-- color lookup
-		local startR, startG, startB = btgData.debuffIndexes[buffIndex] and btg.savedVars.dStartR or btg.savedVars.startR,
-				btgData.debuffIndexes[buffIndex] and btg.savedVars.dStartG or btg.savedVars.startG,
-				btgData.debuffIndexes[buffIndex] and btg.savedVars.dStartB or btg.savedVars.startB
-		local endR, endG, endB = btgData.debuffIndexes[buffIndex] and btg.savedVars.dEndR or btg.savedVars.endR,
-				btgData.debuffIndexes[buffIndex] and btg.savedVars.dEndG or btg.savedVars.endG,
-				btgData.debuffIndexes[buffIndex] and btg.savedVars.dEndB or btg.savedVars.endB
+		local startR, startG, startB = btg.savedVars.startR, btg.savedVars.startG, btg.savedVars.startB
+		local endR, endG, endB = btg.savedVars.endR, btg.savedVars.endG, btg.savedVars.endB
 
 		local progress = btg.savedVars.gradientMode and btgUtil.Clamp(1 - buffRemaining / buffData.buffDuration, 0, 1) or 0
 		local r, g, b = (btg.savedVars.gradientMode and btgUtil.Interpolate(startR, endR, progress) or startR) / 255,
 		                (btg.savedVars.gradientMode and btgUtil.Interpolate(startG, endG, progress) or startG) / 255,
 		                (btg.savedVars.gradientMode and btgUtil.Interpolate(startB, endB, progress) or startB) / 255
 
-		if (buffRemaining > 0) then
+		if ( buffRemaining > 0 ) then
 			panel.stat:SetText(string.format("%.1f", buffRemaining))
 			if (unit.self) then
-				panel.bg:SetCenterColor(r, g, b, 1-0.5*progress)
+				panel.bg:SetCenterColor(r, g, b, 1-0.4*progress)
 			else
-				panel.bg:SetCenterColor(r, g, b, 0.8-0.4*progress)
+				panel.bg:SetCenterColor(r, g, b, 0.8-0.5*progress)
 			end
-		elseif (buffData.endTime == -1) then 
+		elseif ( buffData.endTime == -1 ) then 
 			panel.stat:SetText("")
 			if (unit.self) then
 				panel.bg:SetCenterColor(r, g, b, 1)
@@ -318,24 +313,21 @@ function btg.UpdatePercent( buffIndex, unitsWithBuff, minBuffDuration, minBuffEn
 
 	local now = GetFrameTimeMilliseconds() / 1000
 
-	if(minBuffEndTime) then
+	if( minBuffEndTime ) then
 		
 		local buffRemaining = minBuffEndTime - now
 
-		-- color lookup
-		local startR, startG, startB = btgData.debuffIndexes[buffIndex] and btg.savedVars.dStartR or btg.savedVars.startR,
-				btgData.debuffIndexes[buffIndex] and btg.savedVars.dStartG or btg.savedVars.startG,
-				btgData.debuffIndexes[buffIndex] and btg.savedVars.dStartB or btg.savedVars.startB
-		local endR, endG, endB = btgData.debuffIndexes[buffIndex] and btg.savedVars.dEndR or btg.savedVars.endR,
-				btgData.debuffIndexes[buffIndex] and btg.savedVars.dEndG or btg.savedVars.endG,
-				btgData.debuffIndexes[buffIndex] and btg.savedVars.dEndB or btg.savedVars.endB
+		local startR, startG, startB = btg.savedVars.startR, btg.savedVars.startG, btg.savedVars.startB
+		local endR, endG, endB = btg.savedVars.endR, btg.savedVars.endG, btg.savedVars.endB
 
 		local progress = btg.savedVars.gradientMode and btgUtil.Clamp(1 - buffRemaining / minBuffDuration, 0, 1) or 0
 		local r, g, b = (btg.savedVars.gradientMode and btgUtil.Interpolate(startR, endR, progress) or startR) / 255,
 		                (btg.savedVars.gradientMode and btgUtil.Interpolate(startG, endG, progress) or startG) / 255,
 		                (btg.savedVars.gradientMode and btgUtil.Interpolate(startB, endB, progress) or startB) / 255
 
-		if (buffRemaining > 0 or minBuffEndTime == -1) then
+		if ( buffRemaining > 0 ) then 
+			_G["btgFrame"..buffIndex.."MinimalBackdrop"]:SetCenterColor(r, g, b, 1-0.4*progress)
+		elseif ( minBuffEndTime == -1) then
 			_G["btgFrame"..buffIndex.."MinimalBackdrop"]:SetCenterColor(r, g, b, 1)
 		else
 			_G["btgFrame"..buffIndex.."Percent"]:SetText(string.format("%i%%", 0))

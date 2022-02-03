@@ -88,17 +88,9 @@ btgData = {
 		[20] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(88490)), -- Minor Toughness
 		[21] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61704)), -- Minor Endurance
 
-		[22]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(15776)),   -- Flaming Oil
-		[23]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(32036)),   -- Meatbag Catapult
-		[24]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(159612)),  -- Plague Carrier (Plaguebreak)
-
 	},
 
-	debuffIndexes = {
-		[22] = true, 
-		[23] = true, 
-		[24] = true,
-	},
+
 
 	buffIcons = {
 		[1]  = "/esoui/art/icons/ability_healer_019.dds",          -- Powerful Assault
@@ -121,12 +113,7 @@ btgData = {
 		[18] = '/esoui/art/icons/ability_buff_major_expedition.dds', -- Major Expedition
 		[19] = '/esoui/art/icons/achievement_u30_groupboss5.dds', -- Spalder of Ruin
 		[20] = '/esoui/art/icons/ability_buff_minor_toughness.dds', -- Minor Toughness
-		[21] = '/esoui/art/icons/ability_buff_minor_endurance.dds', -- Minor Endurance
-
-		[22] = "/esoui/art/icons/ava_siege_weapon_002.dds", -- Flaming Oil
-		[23] = "/esoui/art/icons/ability_healer_032.dds", -- Meatbag Catapult
-		[24] = "/esoui/art/icons/death_recap_disease2_dot_heavy.dds", -- Plague Carrier (Plaguebreak)
-		
+		[21] = '/esoui/art/icons/ability_buff_minor_endurance.dds', -- Minor Endurance	
 
 	},
 
@@ -154,9 +141,6 @@ btg = {
 		maxRows = 6,
 		startR = 117, startG = 222, startB = 120,
 		endR = 222, endG = 117, endB = 117,
-		dStartR = 200, dStartG = 200, dStartB = 117,
-		dEndR = 222, dEndG = 117, dEndB = 117,
-
 	},
 
 	debug = false,
