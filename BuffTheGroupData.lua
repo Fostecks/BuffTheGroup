@@ -45,6 +45,8 @@ btgData = {
 		[1201] = 0, -- Castle Thorn
 		[1228] = 0, -- Black Drake Villa
 		[1229] = 0, -- The Cauldron
+		[1301] = 0, -- Coral Aerie
+		[1302] = 0, -- Shipwright's Regret
 
 		-- ARENAS
 		[ 635] = 0, -- Dragonstar Arena
@@ -61,6 +63,7 @@ btgData = {
 		[1121] = 0, -- Sunspire
 		[1196] = 0, -- Kyne's Aegis
 		[1263] = 0, -- Rockgrove
+		[1344] = 0, -- Dreadsail Reef
 	},
 	
 	--- better to use effect names since one effect can come from many IDs (e.g. Major Slayer: Lokk, MA, WM)

@@ -5,7 +5,7 @@ function btg.OnAddOnLoaded( eventCode, addonName )
 
 	btg.savedVars = ZO_SavedVars:NewCharacterIdSettings("BuffTheGroupSavedVariables", btg.variableVersion, nil, btg.defaults, nil, GetWorldName())
 	btg.InitializeControls()
-	SLASH_COMMANDS["/btg"] = btg.ToggleState
+	SLASH_COMMANDS["/btg"] = btg.HandleCommandInput
 	SLASH_COMMANDS["/btgrefresh"] = btg.CheckActivation
 
 	EVENT_MANAGER:RegisterForEvent(btg.name, EVENT_PLAYER_ACTIVATED, btg.CheckActivation)
@@ -13,7 +13,8 @@ function btg.OnAddOnLoaded( eventCode, addonName )
 	btg.buildMenu()
 end
 
-function btg.ToggleState( )
+function btg.HandleCommandInput(args)
+	
 	btg.savedVars.enabled = not btg.savedVars.enabled
 	CHAT_SYSTEM:AddMessage("[BTG] " .. (btg.savedVars.enabled and "Enabled" or "Disabled"))
 	btg.CheckActivation()
