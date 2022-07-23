@@ -181,7 +181,7 @@ btg = {
 		endR = 222, endG = 117, endB = 117,
 	},
 
-	debug = true,
+	debug = false,
 
 	showUI = false,
 	groupSize = 0,
