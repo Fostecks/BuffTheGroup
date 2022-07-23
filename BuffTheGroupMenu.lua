@@ -139,7 +139,7 @@ function btg.buildMenu()
 			name = "Deselect All",
 			width = "half",
 			func = function()
-				for i = 1, #btgData.buffs do
+				for i, _ in pairs(btgData.buffs) do
 					btg.savedVars.trackedBuffs[i] = false
 				end
 				btg.CheckActivation()
@@ -150,10 +150,10 @@ function btg.buildMenu()
 			name = "Reset Positions",
 			width = "half",
 			func = function()
-				for i = 1, #btgData.buffs do
+				for i, _ in pairs(btgData.buffs) do
 					btg.savedVars.framePositions[i] = {
 						left = 1300,
-						top = 150 + (i-1)*10,
+						top = 150 + (i-1)*10 % 1000,
 					}
 					btg.frames[i].frame:ClearAnchors()
 					btg.frames[i].frame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, btg.savedVars.framePositions[i].left, btg.savedVars.framePositions[i].top)
@@ -165,10 +165,11 @@ function btg.buildMenu()
 	local majorInsert = 10
 	local minorInsert = 11
 	local etcInsert = 12
-	for j, buff in ipairs(btgData.buffs) do
+	for j, buff in pairs(btgData.buffs) do
+		local buffName = GetAbilityName(buff)
 		local buffOption = {
 			type = "checkbox",
-			name = buff,
+			name = buffName,
 			default = btg.defaults.trackedBuffs[j],
 			getFunc = function()
 				return btg.savedVars.trackedBuffs[j]
@@ -178,12 +179,12 @@ function btg.buildMenu()
 				btg.CheckActivation()
 			end,
 		}
-		if ( buff:find("Major") ) then
+		if ( buffName:find("Major") ) then
 			table.insert(options, majorInsert, buffOption)
 			majorInsert = majorInsert + 1
 			minorInsert = minorInsert + 1
 			etcInsert = etcInsert + 1	
-		elseif ( buff:find("Minor") ) then
+		elseif ( buffName:find("Minor") ) then
 			table.insert(options, minorInsert, buffOption)
 			minorInsert = minorInsert + 1
 			etcInsert = etcInsert + 1	

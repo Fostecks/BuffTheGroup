@@ -42,6 +42,7 @@ function btg.CheckActivation( eventCode )
 			EVENT_MANAGER:RegisterForEvent(btg.name, EVENT_GROUP_SUPPORT_RANGE_UPDATE, btg.GroupSupportRangeUpdate)
 			EVENT_MANAGER:RegisterForEvent(btg.name, EVENT_EFFECT_CHANGED, btg.EffectChanged)
 			EVENT_MANAGER:RegisterForUpdate(btg.name.."Cycle", 100, btg.refreshUI)
+
 			if(not btg.debug) then
 				EVENT_MANAGER:AddFilterForEvent(btg.name, EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG_PREFIX, "group")
 			end
@@ -84,7 +85,7 @@ end
 function btg.GroupMemberRoleChanged( eventCode, unitTag, newRole )
 	local unit = btg.units[unitTag]
 	if (unit) then
-		for i = 1, #btgData.buffs do
+		for i, _ in pairs(btgData.buffs) do
 			btg.frames[i].panels[unit.panelId].role:SetTexture(btgData.roleIcons[newRole])
 			zo_callLater(btg.CheckActivation, 500)
 		end
@@ -93,14 +94,14 @@ end
 
 function btg.GroupSupportRangeUpdate( eventCode, unitTag, status )
 	if (btg.units[unitTag]) then
-		for i = 1, #btgData.buffs do
+		for i, _ in pairs(btgData.buffs) do
 			btg.UpdateRange(i, btg.units[unitTag].panelId, status)
 		end
 	end
 end
 
 function btg.refreshUI()
-	for i = 1, #btgData.buffs do
+	for i, _ in pairs(btgData.buffs) do
 		local unitsWithBuff = 0
 		local minBuffDuration = 999
 		local minBuffEndTime
@@ -125,23 +126,33 @@ function btg.refreshUI()
 end
 
 function btg.EffectChanged( eventCode, changeType, effectSlot, effectName, unitTag, beginTime, endTime, stackCount, iconName, buffType, effectType, abilityType, statusEffectType, unitName, unitId, abilityId, sourceType )
-	-- format effectName so it's common across all languages
-	local formattedEffectName = zo_strformat(SI_ABILITY_NAME, effectName)
-
 	for index, buff in pairs(btgData.buffs) do
 		if (btg.savedVars.trackedBuffs[index]) then
-			if (buff == formattedEffectName and btg.units[unitTag]) then
-				if (changeType == EFFECT_RESULT_FADED) then
-					btg.units[unitTag].buffs[index].hasBuff = false
-					btg.units[unitTag].buffs[index].endTime = 0
-				elseif ((changeType == EFFECT_RESULT_GAINED or changeType == EFFECT_RESULT_UPDATED) and (beginTime == 0 or endTime == 0)) then -- gained permanent effect	
-					btg.units[unitTag].buffs[index].hasBuff = true
-					btg.units[unitTag].buffs[index].endTime = -1
-					btg.units[unitTag].buffs[index].buffDuration = -1
+			if (buff == abilityId and btg.units[unitTag]) then
+				if index < 1000 then
+					if (changeType == EFFECT_RESULT_FADED) then
+						btg.units[unitTag].buffs[index].hasBuff = false
+						btg.units[unitTag].buffs[index].endTime = 0
+					elseif ((changeType == EFFECT_RESULT_GAINED or changeType == EFFECT_RESULT_UPDATED) and (beginTime == 0 or endTime == 0)) then -- gained permanent effect	
+						btg.units[unitTag].buffs[index].hasBuff = true
+						btg.units[unitTag].buffs[index].endTime = -1
+						btg.units[unitTag].buffs[index].buffDuration = -1
+					else
+						btg.units[unitTag].buffs[index].hasBuff = true
+						btg.units[unitTag].buffs[index].endTime = endTime
+						btg.units[unitTag].buffs[index].buffDuration = endTime - beginTime
+					end
 				else
-					btg.units[unitTag].buffs[index].hasBuff = true
-					btg.units[unitTag].buffs[index].endTime = endTime
-					btg.units[unitTag].buffs[index].buffDuration = endTime - beginTime
+					if(changeType == EFFECT_RESULT_GAINED) then
+						btg.units[unitTag].buffs[index].hasBuff = true
+						btg.units[unitTag].buffs[index].endTime = -1
+						btg.units[unitTag].buffs[index].buffDuration = -1
+					elseif (changeType == EFFECT_RESULT_FADED) then
+						local cooldownId = btgData.buffCDIDs[index]
+						btg.units[unitTag].buffs[index].hasBuff = true
+						btg.units[unitTag].buffs[index].endTime = GetGameTimeMilliseconds()/1000 + GetAbilityDuration(cooldownId)/1000
+						btg.units[unitTag].buffs[index].buffDuration = GetAbilityDuration(cooldownId)/1000
+					end
 				end
 			end
 		end
@@ -156,7 +167,7 @@ end
 function btg.InitializeControls( )
 	local wm = GetWindowManager()
 
-	for i = 1, #btgData.buffs do
+	for i, _ in pairs(btgData.buffs) do
 		local frame = wm:CreateControlFromVirtual("btgFrame" .. i, btgUI, "btgFrame")
 
 		frame:SetHandler("OnMoveStop", function() btg.OnMoveStop(i, frame) end)
@@ -196,7 +207,7 @@ end
 
 function btg.Reset( )
 
-	for i = 1, #btgData.buffs do
+	for i, _ in pairs(btgData.buffs) do
 		for j = 1, GROUP_SIZE_MAX do
 			btg.frames[i].panels[j].panel:ClearAnchors()
 			btg.frames[i].panels[j].panel:SetHidden(true)
@@ -206,7 +217,7 @@ function btg.Reset( )
 	btg.groupSize = GetGroupSize()
 	btg.units = {}
 	
-	for i = 1, #btgData.buffs do
+	for i, _ in pairs(btgData.buffs) do
 		_G["btgFrame"..i.."Icon"]:SetTexture(btgData.buffIcons[i])
 		_G["btgFrame"..i.."MinimalBackdrop"]:SetHidden(not btg.savedVars.minimalMode)
 		_G["btgFrame"..i.."Percent"]:SetHidden(not btg.savedVars.minimalMode)
@@ -223,7 +234,7 @@ function btg.Reset( )
 					buffs = {},
 				}
 				panelIndex = panelIndex + 1
-				for i = 1, #btgData.buffs do
+				for i, _ in pairs(btgData.buffs) do
 					btg.units[unitTag].buffs[i] = {
 						hasBuff = false,
 						endTime = 0,
@@ -234,7 +245,7 @@ function btg.Reset( )
 		end
 	end
 
-	for i = 1, #btgData.buffs do
+	for i, _ in pairs(btgData.buffs) do
 		panelIndex = 1
 		for j = 1, GROUP_SIZE_MAX do
 			local soloPanel = j == 1 and btg.groupSize == 0

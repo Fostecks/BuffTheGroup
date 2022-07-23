@@ -65,35 +65,64 @@ btgData = {
 		[1263] = 0, -- Rockgrove
 		[1344] = 0, -- Dreadsail Reef
 	},
-	
+
 	--- better to use effect names since one effect can come from many IDs (e.g. Major Slayer: Lokk, MA, WM)
 	--- Bad unsorted order, but changing it now would cause savedVars to get wrong values
-	buffs = {
+	buffNames = {
 		[1]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61771)),  -- Powerful Assault
-		[2]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(121871)), -- Major Slayer
-		[3]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(120015)), -- Major Courage
-		[4]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(120013)), -- Major Force
+		[2]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(93109)), -- Major Slayer
+		[3]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(109966)), -- Major Courage
+		[4]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61747)), -- Major Force
 		[5]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(62195)),  -- Major Berserk
 		[6]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(62636)),  -- Minor Berserk
-		[7]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(121878)), -- Minor Courage
+		[7]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(147417)), -- Minor Courage
 		[8]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61687)), -- Major Sorcery
-		[9]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(120017)), -- Minor Sorcery
+		[9]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61685)), -- Minor Sorcery
 		[10]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61665)), -- Major Brutality
-		[11]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(120028)), -- Minor Prophecy
+		[11]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61691)), -- Minor Prophecy
 		[12]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61694)), -- Major Resolve
 		[13]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61693)), -- Minor Resolve
 		[14]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61706)), -- Minor Intellect
-		[15] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(118366)), -- Empower
+		[15] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61737)), -- Empower
 		[16] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61709)), -- Major Heroism
 		[17] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(40079)), -- Radiating Regeneration
 		[18] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61736)), -- Major Expedition
 		[19] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(163401)), -- Spalder of Ruin
 		[20] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(88490)), -- Minor Toughness
 		[21] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61704)), -- Minor Endurance
+		[22] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61666)), -- Minor Savagery
+		[23] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61735)), -- Minor Expedition
+		[24] = zo_strformat(SI_ABILITY_NAME, GetAbilityName(172056)), -- Pillager's Profit Cooldown
 
 	},
 
+	buffs = {
+		[1]  = 61771,  -- Powerful Assault
+		[2]  = 93109, -- Major Slayer
+		[3]  = 109966, -- Major Courage
+		[4]  = 61747, -- Major Force
+		[5]  = 62195,  -- Major Berserk
+		[6]  = 62636,  -- Minor Berserk
+		[7]  = 147417, -- Minor Courage
+		[8]  = 61687, -- Major Sorcery
+		[9]  = 61685, -- Minor Sorcery
+		[10] = 61665, -- Major Brutality
+		[11] = 61691, -- Minor Prophecy
+		[12] = 61694, -- Major Resolve
+		[13] = 61693, -- Minor Resolve
+		[14] = 61706, -- Minor Intellect
+		[15] = 61737, -- Empower
+		[16] = 61709, -- Major Heroism
+		[17] = 40079, -- Radiating Regeneration
+		[18] = 61736, -- Major Expedition
+		[19] = 163401, -- Spalder of Ruin
+		[20] = 88490, -- Minor Toughness
+		[21] = 61704, -- Minor Endurance
+		[22] = 61666, -- Minor Savagery
+		[23] = 61735, -- Minor Expedition
+		[1001] = 172055,   -- Pillager's Profit Cooldown
 
+	},
 
 	buffIcons = {
 		[1]  = "/esoui/art/icons/ability_healer_019.dds",          -- Powerful Assault
@@ -117,7 +146,13 @@ btgData = {
 		[19] = '/esoui/art/icons/achievement_u30_groupboss5.dds', -- Spalder of Ruin
 		[20] = '/esoui/art/icons/ability_buff_minor_toughness.dds', -- Minor Toughness
 		[21] = '/esoui/art/icons/ability_buff_minor_endurance.dds', -- Minor Endurance	
+		[22] = '/esoui/art/icons/ability_buff_minor_savagery.dds', -- Minor Endurance	
+		[23] = '/esoui/art/icons/ability_buff_minor_expedition.dds', -- Minor Expedition
+		[1001] = '/esoui/art/icons/ability_healer_030.dds', -- Pillager's Profit Cooldown
+	},
 
+	buffCDIDs = {
+		[1001] = 172056, -- Pillager's Profit Cooldown
 	},
 
 	roleIcons = {
@@ -146,7 +181,7 @@ btg = {
 		endR = 222, endG = 117, endB = 117,
 	},
 
-	debug = false,
+	debug = true,
 
 	showUI = false,
 	groupSize = 0,
@@ -157,11 +192,11 @@ btg = {
 
 }
 
-for i = 1, #btgData.buffs do
+for i, _ in pairs(btgData.buffs) do
 	btg.defaults.trackedBuffs[i] = i == 1
 
 	btg.defaults.framePositions[i] = {
 		left = 1300,
-		top = 150 + (i-1)*10,
+		top = 150 + (i-1)*10 % 1000,
 	}
 end
