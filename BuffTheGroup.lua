@@ -143,6 +143,7 @@ function btg.EffectChanged( eventCode, changeType, effectSlot, effectName, unitT
 						btg.units[unitTag].buffs[index].buffDuration = endTime - beginTime
 					end
 				else
+					-- is a cooldown buff being tracked
 					if(changeType == EFFECT_RESULT_GAINED) then
 						btg.units[unitTag].buffs[index].hasBuff = true
 						btg.units[unitTag].buffs[index].endTime = -1
