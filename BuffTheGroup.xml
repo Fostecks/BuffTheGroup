@@ -29,6 +29,16 @@
 					<Dimensions x="36" y="36"/>
 				</Texture>
 			</Controls>
+			<Controls>
+				<Backdrop name="$(parent)MinimalBackdrop">
+					<Anchor point="TOP" relativeTo="$(parent)Icon" relativePoint="BOTTOM" offsetY="5" />
+					<Dimensions x="64" y="40" />
+				</Backdrop>
+				<Label name="$(parent)Percent" font="$(GAMEPAD_MEDIUM_FONT)|$(KB_36)|soft-shadow-thin" wrapMode="TRUNCATE" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Anchor point="TOP" relativeTo="$(parent)Icon" relativePoint="BOTTOM" offsetY="4" />
+					<Dimensions x="72" y="36" />
+				</Label>
+			</Controls>
 		</TopLevelControl>
 	</Controls>
 </GuiXml>

@@ -5,7 +5,7 @@ function btg.OnAddOnLoaded( eventCode, addonName )
 
 	btg.savedVars = ZO_SavedVars:NewCharacterIdSettings("BuffTheGroupSavedVariables", btg.variableVersion, nil, btg.defaults, nil, GetWorldName())
 	btg.InitializeControls()
-	SLASH_COMMANDS["/btg"] = btg.ToggleState
+	SLASH_COMMANDS["/btg"] = btg.HandleCommandInput
 	SLASH_COMMANDS["/btgrefresh"] = btg.CheckActivation
 
 	EVENT_MANAGER:RegisterForEvent(btg.name, EVENT_PLAYER_ACTIVATED, btg.CheckActivation)
@@ -13,7 +13,8 @@ function btg.OnAddOnLoaded( eventCode, addonName )
 	btg.buildMenu()
 end
 
-function btg.ToggleState( )
+function btg.HandleCommandInput(args)
+	
 	btg.savedVars.enabled = not btg.savedVars.enabled
 	CHAT_SYSTEM:AddMessage("[BTG] " .. (btg.savedVars.enabled and "Enabled" or "Disabled"))
 	btg.CheckActivation()
@@ -41,6 +42,7 @@ function btg.CheckActivation( eventCode )
 			EVENT_MANAGER:RegisterForEvent(btg.name, EVENT_GROUP_SUPPORT_RANGE_UPDATE, btg.GroupSupportRangeUpdate)
 			EVENT_MANAGER:RegisterForEvent(btg.name, EVENT_EFFECT_CHANGED, btg.EffectChanged)
 			EVENT_MANAGER:RegisterForUpdate(btg.name.."Cycle", 100, btg.refreshUI)
+
 			if(not btg.debug) then
 				EVENT_MANAGER:AddFilterForEvent(btg.name, EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG_PREFIX, "group")
 			end
@@ -83,7 +85,7 @@ end
 function btg.GroupMemberRoleChanged( eventCode, unitTag, newRole )
 	local unit = btg.units[unitTag]
 	if (unit) then
-		for i = 1, #btgData.buffs do
+		for i, _ in pairs(btgData.buffs) do
 			btg.frames[i].panels[unit.panelId].role:SetTexture(btgData.roleIcons[newRole])
 			zo_callLater(btg.CheckActivation, 500)
 		end
@@ -92,38 +94,66 @@ end
 
 function btg.GroupSupportRangeUpdate( eventCode, unitTag, status )
 	if (btg.units[unitTag]) then
-		for i = 1, #btgData.buffs do
+		for i, _ in pairs(btgData.buffs) do
 			btg.UpdateRange(i, btg.units[unitTag].panelId, status)
 		end
 	end
 end
 
 function btg.refreshUI()
-	for unitTag, _ in pairs(btg.units) do
-		for i = 1, #btgData.buffs do
-			btg.UpdateStatus(i, unitTag)
+	for i, _ in pairs(btgData.buffs) do
+		local unitsWithBuff = 0
+		local minBuffDuration = 999
+		local minBuffEndTime
+		for unitTag, unit in pairs(btg.units) do
+			if(btg.savedVars.minimalMode) then
+				local buffData = unit.buffs[i]	
+				if(buffData and buffData.hasBuff) then
+					unitsWithBuff = unitsWithBuff + 1
+					if ( minBuffDuration > buffData.buffDuration ) then
+						minBuffDuration = buffData.buffDuration
+						minBuffEndTime = buffData.endTime
+					end
+				end
+			else
+				btg.UpdateStatus(i, unitTag)
+			end
+		end
+		if(btg.savedVars.minimalMode) then
+			btg.UpdatePercent(i, unitsWithBuff, minBuffDuration, minBuffEndTime)
 		end
 	end
 end
 
 function btg.EffectChanged( eventCode, changeType, effectSlot, effectName, unitTag, beginTime, endTime, stackCount, iconName, buffType, effectType, abilityType, statusEffectType, unitName, unitId, abilityId, sourceType )
-	-- format effectName so it's common across all languages
-	local formattedEffectName = zo_strformat(SI_ABILITY_NAME, effectName)
-
 	for index, buff in pairs(btgData.buffs) do
 		if (btg.savedVars.trackedBuffs[index]) then
-			if (buff == formattedEffectName and btg.units[unitTag]) then
-				if (changeType == EFFECT_RESULT_FADED) then
-					btg.units[unitTag].buffs[index].hasBuff = false
-					btg.units[unitTag].buffs[index].endTime = 0
-				elseif ((changeType == EFFECT_RESULT_GAINED or changeType == EFFECT_RESULT_UPDATED) and (beginTime == 0 or endTime == 0)) then -- gained permanent effect	
-					btg.units[unitTag].buffs[index].hasBuff = true
-					btg.units[unitTag].buffs[index].endTime = -1
-					btg.units[unitTag].buffs[index].buffDuration = -1
+			if (buff == abilityId and btg.units[unitTag]) then
+				if index < 1000 then
+					if (changeType == EFFECT_RESULT_FADED) then
+						btg.units[unitTag].buffs[index].hasBuff = false
+						btg.units[unitTag].buffs[index].endTime = 0
+					elseif ((changeType == EFFECT_RESULT_GAINED or changeType == EFFECT_RESULT_UPDATED) and (beginTime == 0 or endTime == 0)) then -- gained permanent effect	
+						btg.units[unitTag].buffs[index].hasBuff = true
+						btg.units[unitTag].buffs[index].endTime = -1
+						btg.units[unitTag].buffs[index].buffDuration = -1
+					else
+						btg.units[unitTag].buffs[index].hasBuff = true
+						btg.units[unitTag].buffs[index].endTime = endTime
+						btg.units[unitTag].buffs[index].buffDuration = endTime - beginTime
+					end
 				else
-					btg.units[unitTag].buffs[index].hasBuff = true
-					btg.units[unitTag].buffs[index].endTime = endTime
-					btg.units[unitTag].buffs[index].buffDuration = endTime - beginTime
+					-- is a cooldown buff being tracked
+					if(changeType == EFFECT_RESULT_GAINED) then
+						btg.units[unitTag].buffs[index].hasBuff = true
+						btg.units[unitTag].buffs[index].endTime = -1
+						btg.units[unitTag].buffs[index].buffDuration = -1
+					elseif (changeType == EFFECT_RESULT_FADED) then
+						local cooldownId = btgData.buffCDIDs[index]
+						btg.units[unitTag].buffs[index].hasBuff = true
+						btg.units[unitTag].buffs[index].endTime = GetGameTimeMilliseconds()/1000 + GetAbilityDuration(cooldownId)/1000
+						btg.units[unitTag].buffs[index].buffDuration = GetAbilityDuration(cooldownId)/1000
+					end
 				end
 			end
 		end
@@ -138,7 +168,7 @@ end
 function btg.InitializeControls( )
 	local wm = GetWindowManager()
 
-	for i = 1, #btgData.buffs do
+	for i, _ in pairs(btgData.buffs) do
 		local frame = wm:CreateControlFromVirtual("btgFrame" .. i, btgUI, "btgFrame")
 
 		frame:SetHandler("OnMoveStop", function() btg.OnMoveStop(i, frame) end)
@@ -147,6 +177,10 @@ function btg.InitializeControls( )
 			frame = frame,
 			panels = {},
 		}
+		
+		_G["btgFrame"..i.."MinimalBackdrop"]:SetEdgeColor(0, 0, 0, 0)
+		_G["btgFrame"..i.."MinimalBackdrop"]:SetCenterColor(0, 0, 0, 0.5)
+
 
 		for j = 1, GROUP_SIZE_MAX do
 			local panel = wm:CreateControlFromVirtual("btgPanel" .. i .. "_" .. j, frame, "btgPanel")
@@ -156,7 +190,6 @@ function btg.InitializeControls( )
 				bg = panel:GetNamedChild("Backdrop"),
 				name = panel:GetNamedChild("Name"),
 				role = panel:GetNamedChild("Role"),
-				icon = panel:GetNamedChild("Icon"),
 				stat = panel:GetNamedChild("Stat"),
 			}
 
@@ -175,7 +208,7 @@ end
 
 function btg.Reset( )
 
-	for i = 1, #btgData.buffs do
+	for i, _ in pairs(btgData.buffs) do
 		for j = 1, GROUP_SIZE_MAX do
 			btg.frames[i].panels[j].panel:ClearAnchors()
 			btg.frames[i].panels[j].panel:SetHidden(true)
@@ -184,10 +217,13 @@ function btg.Reset( )
 
 	btg.groupSize = GetGroupSize()
 	btg.units = {}
-
-	for i = 1, #btgData.buffs do
+	
+	for i, _ in pairs(btgData.buffs) do
 		_G["btgFrame"..i.."Icon"]:SetTexture(btgData.buffIcons[i])
+		_G["btgFrame"..i.."MinimalBackdrop"]:SetHidden(not btg.savedVars.minimalMode)
+		_G["btgFrame"..i.."Percent"]:SetHidden(not btg.savedVars.minimalMode)
 	end
+
 	local panelIndex = 1
 	for j = 1, GROUP_SIZE_MAX do
 		if (j <= btg.groupSize or j == 1 and btg.groupSize == 0) then
@@ -199,7 +235,7 @@ function btg.Reset( )
 					buffs = {},
 				}
 				panelIndex = panelIndex + 1
-				for i = 1, #btgData.buffs do
+				for i, _ in pairs(btgData.buffs) do
 					btg.units[unitTag].buffs[i] = {
 						hasBuff = false,
 						endTime = 0,
@@ -210,7 +246,7 @@ function btg.Reset( )
 		end
 	end
 
-	for i = 1, #btgData.buffs do
+	for i, _ in pairs(btgData.buffs) do
 		panelIndex = 1
 		for j = 1, GROUP_SIZE_MAX do
 			local soloPanel = j == 1 and btg.groupSize == 0
@@ -232,7 +268,7 @@ function btg.Reset( )
 						btg.frames[i].panels[panelIndex].panel:SetAnchor(TOPLEFT, btg.frames[i].panels[panelIndex - btg.savedVars.maxRows].panel, TOPRIGHT, 0, 0)
 					end
 
-					btg.frames[i].panels[panelIndex].panel:SetHidden(false)
+					btg.frames[i].panels[panelIndex].panel:SetHidden(btg.savedVars.minimalMode)
 				else
 					btg.frames[i].panels[panelIndex].panel:SetAnchor(TOPLEFT, btgFrame, TOPLEFT, 0, 0)
 					btg.frames[i].panels[panelIndex].panel:SetHidden(true)
@@ -249,24 +285,25 @@ function btg.UpdateStatus( buffIndex, unitTag )
 	local panel = btg.frames[buffIndex].panels[unit.panelId]
 	local now = GetFrameTimeMilliseconds() / 1000
 
-	if(buffData.endTime) then
+	if( buffData.endTime ) then
 		local buffRemaining = buffData.endTime - now
 
+		local startR, startG, startB = btg.savedVars.startR, btg.savedVars.startG, btg.savedVars.startB
+		local endR, endG, endB = btg.savedVars.endR, btg.savedVars.endG, btg.savedVars.endB
+
 		local progress = btg.savedVars.gradientMode and btgUtil.Clamp(1 - buffRemaining / buffData.buffDuration, 0, 1) or 0
-		local r, g, b = (btg.savedVars.gradientMode and btgUtil.Interpolate(btg.startR, btg.endR, progress) or btg.startR) / 255,
-		                (btg.savedVars.gradientMode and btgUtil.Interpolate(btg.startG, btg.endG, progress) or btg.startG) / 255,
-		                (btg.savedVars.gradientMode and btgUtil.Interpolate(btg.startB, btg.endB, progress) or btg.startB) / 255
+		local r, g, b = (btg.savedVars.gradientMode and btgUtil.Interpolate(startR, endR, progress) or startR) / 255,
+		                (btg.savedVars.gradientMode and btgUtil.Interpolate(startG, endG, progress) or startG) / 255,
+		                (btg.savedVars.gradientMode and btgUtil.Interpolate(startB, endB, progress) or startB) / 255
 
-		
-
-		if (buffRemaining > 0) then
+		if ( buffRemaining > 0 ) then
 			panel.stat:SetText(string.format("%.1f", buffRemaining))
 			if (unit.self) then
-				panel.bg:SetCenterColor(r, g, b, 1-0.5*progress)
+				panel.bg:SetCenterColor(r, g, b, 1-0.4*progress)
 			else
-				panel.bg:SetCenterColor(r, g, b, 0.8-0.4*progress)
+				panel.bg:SetCenterColor(r, g, b, 0.8-0.5*progress)
 			end
-		elseif (buffData.endTime == -1) then 
+		elseif ( buffData.endTime == -1 ) then 
 			panel.stat:SetText("")
 			if (unit.self) then
 				panel.bg:SetCenterColor(r, g, b, 1)
@@ -281,6 +318,36 @@ function btg.UpdateStatus( buffIndex, unitTag )
 			end
 		end
 	end
+end
+
+function btg.UpdatePercent( buffIndex, unitsWithBuff, minBuffDuration, minBuffEndTime )
+	_G["btgFrame"..buffIndex.."Percent"]:SetText(string.format("%i%%", unitsWithBuff * 100 / btg.groupSize))
+	_G["btgFrame"..buffIndex.."MinimalBackdrop"]:SetCenterColor(0, 0, 0, 0.5)
+
+	local now = GetFrameTimeMilliseconds() / 1000
+
+	if( minBuffEndTime ) then
+		
+		local buffRemaining = minBuffEndTime - now
+
+		local startR, startG, startB = btg.savedVars.startR, btg.savedVars.startG, btg.savedVars.startB
+		local endR, endG, endB = btg.savedVars.endR, btg.savedVars.endG, btg.savedVars.endB
+
+		local progress = btg.savedVars.gradientMode and btgUtil.Clamp(1 - buffRemaining / minBuffDuration, 0, 1) or 0
+		local r, g, b = (btg.savedVars.gradientMode and btgUtil.Interpolate(startR, endR, progress) or startR) / 255,
+		                (btg.savedVars.gradientMode and btgUtil.Interpolate(startG, endG, progress) or startG) / 255,
+		                (btg.savedVars.gradientMode and btgUtil.Interpolate(startB, endB, progress) or startB) / 255
+
+		if ( buffRemaining > 0 ) then 
+			_G["btgFrame"..buffIndex.."MinimalBackdrop"]:SetCenterColor(r, g, b, 1-0.4*progress)
+		elseif ( minBuffEndTime == -1) then
+			_G["btgFrame"..buffIndex.."MinimalBackdrop"]:SetCenterColor(r, g, b, 1)
+		else
+			_G["btgFrame"..buffIndex.."Percent"]:SetText(string.format("%i%%", 0))
+			_G["btgFrame"..buffIndex.."MinimalBackdrop"]:SetCenterColor(0, 0, 0, 0.5)
+		end
+	end
+
 end
 
 function btg.UpdateRange( buffIndex, panelId, status )
