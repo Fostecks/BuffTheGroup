@@ -47,6 +47,10 @@ btgData = {
 		[1229] = 0, -- The Cauldron
 		[1301] = 0, -- Coral Aerie
 		[1302] = 0, -- Shipwright's Regret
+		[1360] = 0, -- Earthen Root Enclave
+		[1361] = 0, -- Graven Deep
+		[1389] = 0, -- Bal Sunnar
+		[1390] = 0, -- Scrivner's Hall
 
 		-- ARENAS
 		[ 635] = 0, -- Dragonstar Arena
@@ -64,6 +68,7 @@ btgData = {
 		[1196] = 0, -- Kyne's Aegis
 		[1263] = 0, -- Rockgrove
 		[1344] = 0, -- Dreadsail Reef
+		[1427] = 0. -- Sanity's Edge
 	},
 
 	--- better to use effect names since one effect can come from many IDs (e.g. Major Slayer: Lokk, MA, WM)
@@ -74,7 +79,7 @@ btgData = {
 		[3]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(109966)), -- Major Courage
 		[4]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61747)), -- Major Force
 		[5]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(62195)),  -- Major Berserk
-		[6]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(62636)),  -- Minor Berserk
+		[6]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61744)),  -- Minor Berserk
 		[7]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(147417)), -- Minor Courage
 		[8]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61687)), -- Major Sorcery
 		[9]  = zo_strformat(SI_ABILITY_NAME, GetAbilityName(61685)), -- Minor Sorcery
@@ -102,7 +107,7 @@ btgData = {
 		[3]  = 109966, -- Major Courage
 		[4]  = 61747, -- Major Force
 		[5]  = 62195,  -- Major Berserk
-		[6]  = 62636,  -- Minor Berserk
+		[6]  = 61744,  -- Minor Berserk
 		[7]  = 147417, -- Minor Courage
 		[8]  = 61687, -- Major Sorcery
 		[9]  = 61685, -- Minor Sorcery
@@ -126,12 +131,12 @@ btgData = {
 
 	buffIcons = {
 		[1]  = "/esoui/art/icons/ability_healer_019.dds",          -- Powerful Assault
-		[2]  = "/esoui/art/icons/procs_006.dds",                   -- Major Slayer
+		[2]  = '/esoui/art/icons/ability_buff_major_courage.dds',   -- Major Slayer
 		[3]  = "/esoui/art/icons/ability_mage_045.dds",            -- Major Courage
 		[4]  = "/esoui/art/icons/ability_buff_major_force.dds",    -- Major Force
 		[5]  = "/esoui/art/icons/ability_buff_major_berserk.dds",  -- Major Berserk
 		[6]  = '/esoui/art/icons/ability_buff_minor_berserk.dds',  -- Minor Berserk
-		[7]  = '/esoui/art/icons/ability_mage_045.dds',            -- Minor Courage
+		[7]  = '/esoui/art/icons/ability_buff_minor_courage.dds',  -- Minor Courage
 		[8]  = '/esoui/art/icons/ability_buff_major_sorcery.dds',  -- Major Sorcery
 		[9]  = '/esoui/art/icons/ability_buff_minor_sorcery.dds',  -- Minor Sorcery
 		[10]  = '/esoui/art/icons/ability_buff_major_brutality.dds',  -- Major Brutality
@@ -146,12 +151,12 @@ btgData = {
 		[19] = '/esoui/art/icons/achievement_u30_groupboss5.dds', -- Spalder of Ruin
 		[20] = '/esoui/art/icons/ability_buff_minor_toughness.dds', -- Minor Toughness
 		[21] = '/esoui/art/icons/ability_buff_minor_endurance.dds', -- Minor Endurance	
-		[22] = '/esoui/art/icons/ability_buff_minor_savagery.dds', -- Minor Endurance	
+		[22] = '/esoui/art/icons/ability_buff_minor_savagery.dds', -- Minor Savagery	
 		[23] = '/esoui/art/icons/ability_buff_minor_expedition.dds', -- Minor Expedition
 		[1001] = '/esoui/art/icons/ability_healer_030.dds', -- Pillager's Profit Cooldown
 	},
 
-	buffCDIDs = {
+	buffDecayedIDs = {
 		[1001] = 172056, -- Pillager's Profit Cooldown
 	},
 
@@ -165,7 +170,7 @@ btgData = {
 
 btg = {
 	name = "BuffTheGroup",
-	version = "3.2.0",
+	version = "3.3.0",
 	variableVersion = 4,
 
 	defaults = {
