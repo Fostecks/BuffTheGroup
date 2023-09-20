@@ -26,11 +26,6 @@ function btg.CheckActivation( eventCode )
 	if (((btgData.zones[zoneId] and GetGroupSize() > 1) or btg.debug) and btg.savedVars.enabled) then
 		btg.Reset()
 
-		-- Workaround for when the game reports that the player is not in a group shortly after zoning
-		if (btg.groupSize == 0) then
-			zo_callLater(function() if (GetGroupSize() > 1) then btg.CheckActivation() end end, 5000)
-		end
-
 		if (not btg.showUI) then
 			btg.showUI = true
 
@@ -126,14 +121,14 @@ function btg.refreshUI()
 end
 
 function btg.EffectChanged( eventCode, changeType, effectSlot, effectName, unitTag, beginTime, endTime, stackCount, iconName, buffType, effectType, abilityType, statusEffectType, unitName, unitId, abilityId, sourceType )
-	for index, buff in pairs(btgData.buffs) do
+	for index, buffId in pairs(btgData.buffs) do
 		if (btg.savedVars.trackedBuffs[index]) then
-			if (buff == abilityId and btg.units[unitTag]) then
+			if (buffId == abilityId and btg.units[unitTag]) then
 				if index < 1000 then
 					if (changeType == EFFECT_RESULT_FADED) then
 						btg.units[unitTag].buffs[index].hasBuff = false
 						btg.units[unitTag].buffs[index].endTime = 0
-					elseif ((changeType == EFFECT_RESULT_GAINED or changeType == EFFECT_RESULT_UPDATED) and (beginTime == 0 or endTime == 0)) then -- gained permanent effect	
+					elseif ((changeType == EFFECT_RESULT_GAINED or changeType == EFFECT_RESULT_UPDATED) and (beginTime == 0 or endTime == 0 or beginTime == endTime)) then -- gained permanent (or decaying) effect	
 						btg.units[unitTag].buffs[index].hasBuff = true
 						btg.units[unitTag].buffs[index].endTime = -1
 						btg.units[unitTag].buffs[index].buffDuration = -1
@@ -143,15 +138,15 @@ function btg.EffectChanged( eventCode, changeType, effectSlot, effectName, unitT
 						btg.units[unitTag].buffs[index].buffDuration = endTime - beginTime
 					end
 				else
-					-- is a cooldown buff being tracked
+					-- is a decaying buff being tracked
 					if(changeType == EFFECT_RESULT_GAINED) then
 						btg.units[unitTag].buffs[index].hasBuff = true
 						btg.units[unitTag].buffs[index].endTime = -1
 						btg.units[unitTag].buffs[index].buffDuration = -1
 					elseif (changeType == EFFECT_RESULT_FADED) then
-						local cooldownId = btgData.buffCDIDs[index]
+						local cooldownId = btgData.buffDecayedIDs[index]
 						btg.units[unitTag].buffs[index].hasBuff = true
-						btg.units[unitTag].buffs[index].endTime = GetGameTimeMilliseconds()/1000 + GetAbilityDuration(cooldownId)/1000
+						btg.units[unitTag].buffs[index].endTime = GetGameTimeMilliseconds()/1000 + GetAbilityDuration(cooldownId)/1000 - GetAbilityDuration(abilityId)/1000
 						btg.units[unitTag].buffs[index].buffDuration = GetAbilityDuration(cooldownId)/1000
 					end
 				end
