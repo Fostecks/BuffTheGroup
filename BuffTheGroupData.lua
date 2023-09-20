@@ -68,8 +68,8 @@ btgData = {
 		[1196] = 0, -- Kyne's Aegis
 		[1263] = 0, -- Rockgrove
 		[1344] = 0, -- Dreadsail Reef
-		[1427] = 0. -- Sanity's Edge
-
+		[1427] = 0, -- Sanity's Edge
+		
 	},
 
 	--- better to use effect names since one effect can come from many IDs (e.g. Major Slayer: Lokk, MA, WM)

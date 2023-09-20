@@ -29,10 +29,7 @@ function btg.CheckActivation( eventCode )
 		if (not btg.showUI) then
 			btg.showUI = true
 
-			EVENT_MANAGER:RegisterForEvent(btg.name, EVENT_UNIT_CREATED, btg.GroupUpdate)
 			EVENT_MANAGER:AddFilterForEvent(btg.name, EVENT_UNIT_CREATED, REGISTER_FILTER_UNIT_TAG_PREFIX, "group")
-			EVENT_MANAGER:RegisterForEvent(btg.name, EVENT_GROUP_MEMBER_JOINED, btg.GroupUpdate)
-			EVENT_MANAGER:RegisterForEvent(btg.name, EVENT_GROUP_MEMBER_LEFT, btg.GroupUpdate)
 			EVENT_MANAGER:RegisterForEvent(btg.name, EVENT_GROUP_MEMBER_ROLE_CHANGED, btg.GroupMemberRoleChanged)
 			EVENT_MANAGER:RegisterForEvent(btg.name, EVENT_GROUP_SUPPORT_RANGE_UPDATE, btg.GroupSupportRangeUpdate)
 			EVENT_MANAGER:RegisterForEvent(btg.name, EVENT_EFFECT_CHANGED, btg.EffectChanged)
