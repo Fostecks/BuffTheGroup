@@ -132,8 +132,8 @@ btgData = {
 
 	buffIcons = {
 		[1]  = "/esoui/art/icons/ability_healer_019.dds",          -- Powerful Assault
-		[2]  = '/esoui/art/icons/ability_buff_major_courage.dds',   -- Major Slayer
-		[3]  = "/esoui/art/icons/ability_mage_045.dds",            -- Major Courage
+		[2]  = '/esoui/art/icons/procs_006.dds',                   -- Major Slayer
+		[3]  = "/esoui/art/icons/ability_buff_major_courage.dds",  -- Major Courage
 		[4]  = "/esoui/art/icons/ability_buff_major_force.dds",    -- Major Force
 		[5]  = "/esoui/art/icons/ability_buff_major_berserk.dds",  -- Major Berserk
 		[6]  = '/esoui/art/icons/ability_buff_minor_berserk.dds',  -- Minor Berserk
@@ -171,7 +171,7 @@ btgData = {
 
 btg = {
 	name = "BuffTheGroup",
-	version = "3.3.0",
+	version = "3.4.0",
 	variableVersion = 4,
 
 	defaults = {
